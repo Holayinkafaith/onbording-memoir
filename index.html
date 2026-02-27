@@ -769,18 +769,30 @@
     </h1>
     <div class="welcome-divider"></div>
     <p class="welcome-sub">
-      Your class has built something remarkable.<br>
-      Let Memoir help you preserve it forever.
+      Preserve Your Class Forever 
+      
     </p>
-    <a href="#what-inside" style="display:inline-flex; align-items:center; gap:0.5rem; font-family:var(--font-body); font-size:0.65rem; letter-spacing:3px; text-transform:uppercase; color:var(--white-60); text-decoration:none; margin-top:1rem; transition:color 0.3s;" onmouseover="this.style.color='var(--gold)'" onmouseout="this.style.color='var(--white-60)'">
-      See what's inside &nbsp;↓
-    </a>
+    <button class="welcome-cta" onclick="goTo('screen-whats-inside')" style="margin-top:1rem;">
+      START YOUR CLASS EXPERIENCE &nbsp;→
+    </button>
   </div>
 
-  <!-- WHAT'S INSIDE -->
-  <div id="what-inside" class="welcome-section">
+  <footer class="site-footer">
+    <div class="footer-brand">Memoir Deja Vu</div>
+    <div class="footer-text">Powered by Memoir Deja Vu</div>
+  </footer>
+</div>
+
+<!-- ===== SCREEN 1B: WHAT'S INSIDE ===== -->
+<div class="screen" id="screen-whats-inside">
+  <header class="site-header">
+    <div class="brand">Memoir Deja Vu</div>
+    <div class="brand-sub">What's Inside</div>
+  </header>
+
+  <div style="position:relative; z-index:1; max-width:860px; margin:0 auto; padding:4rem 2rem; width:100%;">
     <span class="section-eyebrow">What's Inside</span>
-    <h2 class="section-heading">Everything your class<br>story needs.</h2>
+    <h2 class="section-heading" style="text-align:center;">Everything your class<br>story needs.</h2>
     <div class="section-divider"></div>
     <p class="section-intro">
       This isn't a template. It's a hand-built, fully personalized digital home for your graduating class —
@@ -824,72 +836,15 @@
         <div class="feature-desc">A fully searchable, alphabetically filterable archive of every graduate. Click any name and their full profile slides open. On mobile it rises from the bottom. On desktop it glides in from the side. Every single person, remembered properly.</div>
       </div>
     </div>
-  </div>
 
-  <!-- THE BIG QUOTE -->
-  <div class="quote-wrap">
-    <span class="quote-mark">"</span>
-    <p class="big-quote">
-      Ten years from now, someone will open this site and
-      <span>feel everything all over again.</span>
-      Their quote will still be there. Their memory will still be there.
-      The confession that made them cry will still be there.
-    </p>
-    <div class="quote-attr">— Memoir Deja Vu</div>
-  </div>
-
-  <!-- HOW IT WORKS -->
-  <div class="welcome-section">
-    <span class="section-eyebrow">How It Works</span>
-    <h2 class="section-heading">Simple. Phased.<br>Done in days.</h2>
-    <div class="section-divider"></div>
-
-    <div class="phases-list">
-      <div class="phase-item">
-        <div class="phase-num">01</div>
-        <div>
-          <div class="phase-title">Department Commitment</div>
-          <div class="phase-desc">Fill the form on the next screen. Tell us your department, your class size, your contact. We reach out on WhatsApp within 24 hours and officially open your class portal.</div>
-        </div>
-      </div>
-      <div class="phase-item">
-        <div class="phase-num">02</div>
-        <div>
-          <div class="phase-title">Student Data Submission</div>
-          <div class="phase-desc">We send you a structured Google Sheet. Each graduate fills their name, nickname, quote, best memory and ambition. You collect it. We build from it.</div>
-        </div>
-      </div>
-      <div class="phase-item">
-        <div class="phase-num">03</div>
-        <div>
-          <div class="phase-title">Media & Content Upload</div>
-          <div class="phase-desc">Photos, music, lecturer details — all submitted through a shared Google Drive folder we set up for you. Organized, simple, no confusion.</div>
-        </div>
-      </div>
-      <div class="phase-item">
-        <div class="phase-num">04</div>
-        <div>
-          <div class="phase-title">Launch</div>
-          <div class="phase-desc">Your class legacy goes live. A private link sent to every graduate. Your story, permanently online. Your class, forever remembered.</div>
-        </div>
-      </div>
+    <div class="action-row" style="max-width:560px; margin:3rem auto 0;">
+      <button class="btn-ghost" onclick="goTo('screen-welcome')">← Back</button>
+      <button class="btn-primary" onclick="goTo('screen-rep')">Start Your Class Experience →</button>
     </div>
   </div>
 
-  <!-- BOTTOM CTA -->
-  <div class="bottom-cta-wrap">
-    <p class="bottom-cta-pre">
-      If your class is serious about being remembered —<br>
-      this is where you begin.
-    </p>
-    <button class="welcome-cta" onclick="goTo('screen-rep')">
-      Start Your Class Experience &nbsp;→
-    </button>
-  </div>
-
   <footer class="site-footer">
-    <div class="footer-brand">Memoir Deja Vu</div>
-    <div class="footer-text">Powered by Memoir Deja Vu</div>
+    <div class="footer-text">Powered by <span class="footer-brand" style="display:inline; font-size:inherit; letter-spacing:2px; margin:0;">Memoir Deja Vu</span></div>
   </footer>
 </div>
 
@@ -975,12 +930,31 @@
     </div>
 
     <div class="price-display" id="priceDisplay">
-      <div class="price-equation" id="priceEquation">— × ₦3,000 = —</div>
-      <div class="price-total" id="priceTotal">₦0</div>
-      <div class="price-reframe" id="priceReframe">
-        That's just <span>₦3,000 per student</span> — less than the cost of a meal,
-        for something they'll carry for the rest of their lives.
-      </div>
+      <div class="price-rate" id="priceRate" style="
+        font-family: var(--font-display);
+        font-size: clamp(3rem, 10vw, 5.5rem);
+        color: var(--gold);
+        letter-spacing: 2px;
+        line-height: 1;
+        margin-bottom: 0.5rem;
+      ">₦3,000 <span style="font-family:var(--font-serif); font-style:italic; font-size:0.35em; color:var(--white-60); letter-spacing:1px;">per student</span></div>
+      <div class="price-equation" id="priceEquation" style="
+        font-family: var(--font-body);
+        font-size: 0.95rem;
+        color: var(--white-60);
+        letter-spacing: 0.5px;
+        margin-bottom: 1.5rem;
+      "></div>
+      <div style="
+        border-top: 1px solid var(--glass-border);
+        padding-top: 1.25rem;
+        font-family: var(--font-display);
+        font-size: clamp(0.9rem, 2.5vw, 1.15rem);
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: var(--gold-light);
+        line-height: 1.6;
+      ">Less than what you spent on Data this Semester.</div>
     </div>
 
     <div class="action-row">
@@ -1156,16 +1130,8 @@ function calculatePrice() {
     return;
   }
 
-  const total = count * 3000;
-  const formatted = '₦' + total.toLocaleString('en-NG');
-
   document.getElementById('priceEquation').textContent =
-    `${count.toLocaleString()} graduates × ₦3,000`;
-  document.getElementById('priceTotal').textContent    = formatted;
-  document.getElementById('priceTotal').style.animation = 'none';
-  requestAnimationFrame(() => {
-    document.getElementById('priceTotal').style.animation = 'countUp 0.3s var(--ease)';
-  });
+    `${count.toLocaleString()} students × ₦3,000`;
 
   display.classList.add('visible');
   nextBtn.disabled = false;
