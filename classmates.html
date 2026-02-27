@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Memoir Deja Vu — Submit Your Memory</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600&family=Cinzel:wght@400;600;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+  <style>
+    /* ===== VARIABLES — landing.html ===== */
+    :root {
+      --navy:        #070f1e;
+      --navy-mid:    #0c1a35;
+      --navy-light:  #162848;
+      --gold:        #c9a84c;
+      --gold-light:  #e8c97a;
+      --gold-dim:    #7a5f2a;
+      --gold-glow:   rgba(201,168,76,0.15);
+      --white:       #ffffff;
+      --white-90:    rgba(255,255,255,0.9);
+      --white-60:    rgba(255,255,255,0.6);
+      --white-10:    rgba(255,255,255,0.07);
+      --glass:       rgba(255,255,255,0.05);
+      --glass-border:rgba(201,168,76,0.2);
+      --red:         #e74c3c;
+      --font-display:'Cinzel', serif;
+      --font-serif:  'Cormorant Garamond', serif;
+      --font-body:   'Lato', sans-serif;
+      --ease:        cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; font-size: 16px; }
+    body {
+      background: var(--navy);
+      color: var(--white);
+      font-family: var(--font-body);
+      line-height: 1.7;
+      overflow-x: hidden;
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+      opacity: 0;
+      animation: pageIn 0.8s var(--ease) 0.1s forwards;
+    }
+    @keyframes pageIn { to { opacity: 1; } }
+
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: var(--navy); }
+    ::-webkit-scrollbar-thumb { background: var(--gold-dim); border-radius: 3px; }
+
+    body::before {
+      content: '';
+      position: fixed; inset: 0; z-index: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none; opacity: 0.4;
+    }
+
+    .ambient { position: fixed; z-index: 0; border-radius: 50%; filter: blur(120px); pointer-events: none; }
+    .ambient-1 {
+      width: 600px; height: 600px; top: -200px; right: -200px;
+      background: radial-gradient(circle, rgba(201,168,76,0.08) 0%, transparent 70%);
+      animation: drift1 20s ease-in-out infinite alternate;
+    }
+    .ambient-2 {
+      width: 500px; height: 500px; bottom: -100px; left: -150px;
+      background: radial-gradient(circle, rgba(10,40,100,0.3) 0%, transparent 70%);
+      animation: drift2 25s ease-in-out infinite alternate;
+    }
+    @keyframes drift1 { from { transform: translate(0,0); } to { transform: translate(-60px,80px); } }
+    @keyframes drift2 { from { transform: translate(0,0); } to { transform: translate(80px,-60px); } }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* ===== HEADER ===== */
+    .site-header {
+      padding: 1.25rem 2rem;
+      display: flex; align-items: center; justify-content: space-between;
+      background: linear-gradient(to bottom, rgba(7,15,30,0.98) 0%, rgba(7,15,30,0.95) 100%);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--glass-border);
+      position: sticky; top: 0; z-index: 100; flex-shrink: 0;
+    }
+    .brand { font-family: var(--font-display); font-size: 0.75rem; letter-spacing: 4px; color: var(--gold); text-transform: uppercase; }
+    .brand-sub { font-family: var(--font-serif); font-style: italic; font-size: 0.8rem; color: var(--white-60); }
+
+    .container { max-width: 780px; margin: 0 auto; padding: 0 2rem; position: relative; z-index: 1; }
+
+    /* ===== HERO ===== */
+    .cm-hero {
+      min-height: 80vh; display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      text-align: center; padding: 6rem 2rem 5rem;
+      position: relative; z-index: 1;
+    }
+    .cm-hero::before, .cm-hero::after {
+      content: ''; position: absolute; left: 50%; transform: translateX(-50%);
+      width: 1px; background: linear-gradient(to bottom, transparent, var(--gold-dim), transparent);
+    }
+    .cm-hero::before { top: 0; height: 80px; }
+    .cm-hero::after  { bottom: 0; height: 80px; }
+
+    .dept-banner {
+      display: inline-flex; align-items: center; gap: 0.75rem;
+      background: var(--glass); border: 1px solid var(--glass-border);
+      border-radius: 30px; padding: 0.5rem 1.25rem; margin-bottom: 2.5rem;
+      opacity: 0; animation: fadeUp 0.8s var(--ease) 0.2s forwards;
+    }
+    .dept-icon { font-size: 1rem; }
+    .dept-name { font-family: var(--font-display); font-size: 0.65rem; letter-spacing: 2px; color: var(--gold); text-transform: uppercase; }
+    .dept-sep { color: var(--glass-border); }
+    .dept-school { font-family: var(--font-serif); font-style: italic; font-size: 0.85rem; color: var(--white-60); }
+
+    .hero-eyebrow { font-family: var(--font-body); font-size: 0.65rem; letter-spacing: 6px; text-transform: uppercase; color: var(--gold); margin-bottom: 1.5rem; opacity: 0; animation: fadeUp 0.8s var(--ease) 0.3s forwards; }
+    .hero-title { font-family: var(--font-display); font-size: clamp(2rem, 6vw, 4rem); line-height: 1.1; letter-spacing: 2px; color: var(--white); margin-bottom: 1.5rem; opacity: 0; animation: fadeUp 0.9s var(--ease) 0.5s forwards; }
+    .hero-title em { font-style: italic; color: var(--gold); font-family: var(--font-serif); font-weight: 300; }
+    .hero-divider { width: 60px; height: 1px; background: linear-gradient(to right, transparent, var(--gold), transparent); margin: 0 auto 2rem; opacity: 0; animation: fadeUp 0.8s var(--ease) 0.6s forwards; }
+    .hero-sub { font-family: var(--font-serif); font-style: italic; font-size: clamp(1rem, 2.5vw, 1.3rem); color: var(--white-60); line-height: 1.9; max-width: 520px; margin: 0 auto 3rem; opacity: 0; animation: fadeUp 1s var(--ease) 0.7s forwards; }
+    .hero-scroll-cta { display: inline-flex; align-items: center; gap: 0.5rem; font-family: var(--font-body); font-size: 0.65rem; letter-spacing: 3px; text-transform: uppercase; color: var(--white-60); text-decoration: none; transition: color 0.3s; opacity: 0; animation: fadeUp 1s var(--ease) 0.9s forwards; }
+    .hero-scroll-cta:hover { color: var(--gold); }
+
+    /* ===== FEATURES ===== */
+    .features { padding: 8rem 0; position: relative; z-index: 1; }
+    .section-label { font-family: var(--font-body); font-size: 0.62rem; letter-spacing: 5px; text-transform: uppercase; color: var(--gold); display: block; margin-bottom: 1rem; }
+    .section-title { font-family: var(--font-display); font-size: clamp(1.8rem, 4vw, 2.8rem); color: var(--white); letter-spacing: 1px; margin-bottom: 1rem; line-height: 1.2; }
+    .section-divider { width: 50px; height: 1px; background: linear-gradient(to right, var(--gold), transparent); margin-bottom: 3rem; }
+    .features-intro { font-family: var(--font-serif); font-style: italic; font-size: 1.1rem; color: var(--white-60); line-height: 1.9; margin-bottom: 3rem; max-width: 600px; }
+    .features-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.25rem; }
+    .feature-card { background: var(--glass); border: 1px solid var(--glass-border); border-radius: 10px; padding: 1.75rem 1.5rem; position: relative; overflow: hidden; opacity: 0; transform: translateY(20px); transition: opacity 0.5s ease, transform 0.5s ease, border-color 0.3s; }
+    .feature-card.visible { opacity: 1; transform: translateY(0); }
+    .feature-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(to right, transparent, var(--gold), transparent); transform: scaleX(0); transition: transform 0.5s var(--ease); }
+    .feature-card:hover { border-color: rgba(201,168,76,0.4); transform: translateY(-4px) !important; box-shadow: 0 20px 50px rgba(0,0,0,0.3); }
+    .feature-card:hover::before { transform: scaleX(1); }
+    .feature-card.wide { grid-column: 1 / -1; }
+    .feature-icon { font-size: 1.75rem; margin-bottom: 1rem; display: block; }
+    .feature-title { font-family: var(--font-display); font-size: 0.8rem; letter-spacing: 2px; color: var(--gold); text-transform: uppercase; margin-bottom: 0.6rem; }
+    .feature-desc { font-family: var(--font-serif); font-size: 0.98rem; color: var(--white-60); line-height: 1.7; }
+
+    /* ===== QUOTE ===== */
+    .quote-section { padding: 6rem 0; position: relative; z-index: 1; text-align: center; }
+    .quote-section::before { content: '"'; position: absolute; top: 2rem; left: 50%; transform: translateX(-50%); font-family: var(--font-serif); font-size: 12rem; color: rgba(201,168,76,0.05); line-height: 1; pointer-events: none; }
+    .big-quote { font-family: var(--font-serif); font-style: italic; font-size: clamp(1.4rem, 3.5vw, 2.2rem); color: var(--white-90); line-height: 1.6; max-width: 680px; margin: 0 auto 2rem; position: relative; z-index: 1; }
+    .big-quote span { color: var(--gold); }
+    .quote-attr { font-size: 0.65rem; letter-spacing: 3px; text-transform: uppercase; color: var(--white-60); }
+
+    /* ===== PHASES ===== */
+    .phases { padding: 6rem 0; position: relative; z-index: 1; }
+    .phases-list { display: flex; flex-direction: column; margin-top: 3rem; position: relative; }
+    .phases-list::before { content: ''; position: absolute; left: 24px; top: 0; bottom: 0; width: 1px; background: linear-gradient(to bottom, var(--gold-dim), transparent); }
+    .phase-item { display: flex; gap: 2rem; align-items: flex-start; padding: 2rem 0; opacity: 0; transform: translateX(-20px); transition: opacity 0.5s ease, transform 0.5s ease; }
+    .phase-item.visible { opacity: 1; transform: translateX(0); }
+    .phase-number { width: 48px; height: 48px; border-radius: 50%; flex-shrink: 0; background: var(--navy-mid); border: 1px solid var(--gold-dim); display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: 0.75rem; color: var(--gold); position: relative; z-index: 1; }
+    .phase-content { flex: 1; }
+    .phase-title { font-family: var(--font-display); font-size: 0.85rem; letter-spacing: 2px; color: var(--gold); text-transform: uppercase; margin-bottom: 0.4rem; }
+    .phase-desc { font-family: var(--font-serif); font-size: 1rem; color: var(--white-60); line-height: 1.7; }
+
+    /* ===== FORM SECTION ===== */
+    .form-section { padding: 4rem 0 8rem; position: relative; z-index: 1; }
+    .form-wrap { background: linear-gradient(135deg, var(--navy-mid) 0%, var(--navy-light) 100%); border: 1px solid var(--glass-border); border-radius: 16px; padding: 3rem 2.5rem; position: relative; overflow: hidden; }
+    .form-wrap::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(to right, transparent, var(--gold), transparent); }
+
+    .form-dept-tag { display: inline-flex; align-items: center; gap: 0.6rem; background: var(--gold-glow); border: 1px solid var(--glass-border); border-radius: 6px; padding: 0.5rem 1rem; margin-bottom: 2rem; }
+    .form-dept-tag span { font-family: var(--font-display); font-size: 0.65rem; letter-spacing: 2px; color: var(--gold); text-transform: uppercase; }
+    .form-title { font-family: var(--font-display); font-size: clamp(1.3rem, 3vw, 1.8rem); color: var(--gold); letter-spacing: 2px; margin-bottom: 0.5rem; }
+    .form-sub { font-family: var(--font-serif); font-style: italic; font-size: 1rem; color: var(--white-60); line-height: 1.8; margin-bottom: 2.5rem; }
+
+    .fields { display: flex; flex-direction: column; gap: 1.1rem; }
+    .field  { display: flex; flex-direction: column; gap: 0.4rem; }
+    .field label { font-family: var(--font-body); font-size: 0.65rem; letter-spacing: 2.5px; text-transform: uppercase; color: var(--gold); }
+    .field input, .field select, .field textarea { background: rgba(255,255,255,0.04); border: 1px solid var(--glass-border); color: var(--white); font-family: var(--font-body); font-size: 0.95rem; padding: 0.85rem 1rem; border-radius: 8px; outline: none; transition: border-color 0.3s, background 0.3s; width: 100%; -webkit-appearance: none; }
+    .field input:focus, .field select:focus, .field textarea:focus { border-color: var(--gold); background: rgba(201,168,76,0.04); }
+    .field input::placeholder, .field textarea::placeholder { color: rgba(255,255,255,0.3); font-style: italic; }
+    .field input.error, .field textarea.error, .field select.error { border-color: var(--red); }
+    .field select option { background: var(--navy-mid); color: var(--white); }
+    .field textarea { resize: none; min-height: 130px; font-family: var(--font-serif); font-size: 1.05rem; line-height: 1.7; }
+    .char-count { font-size: 0.62rem; color: var(--white-60); text-align: right; margin-top: 0.25rem; }
+
+    .btn-primary { width: 100%; padding: 1rem; background: linear-gradient(135deg, var(--gold-dim), var(--gold)); color: var(--navy); font-family: var(--font-display); font-size: 0.72rem; letter-spacing: 3px; text-transform: uppercase; font-weight: 700; border: none; border-radius: 8px; cursor: pointer; transition: all 0.4s var(--ease); margin-top: 1.75rem; min-height: 54px; position: relative; overflow: hidden; }
+    .btn-primary::after { content: ''; position: absolute; inset: 0; background: rgba(255,255,255,0.15); transform: scaleX(0); transform-origin: left; transition: transform 0.4s var(--ease); }
+    .btn-primary:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 15px 40px rgba(201,168,76,0.3); }
+    .btn-primary:hover:not(:disabled)::after { transform: scaleX(1); }
+    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* ===== SUCCESS ===== */
+    .success-state { display: none; text-align: center; padding: 3rem 0; animation: fadeUp 0.6s var(--ease) forwards; }
+    .success-icon { font-size: 3.5rem; margin-bottom: 1.5rem; display: block; animation: floatUp 3s ease-in-out infinite; }
+    @keyframes floatUp { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+    .success-title { font-family: var(--font-display); font-size: clamp(1.2rem, 3vw, 1.6rem); color: var(--gold); letter-spacing: 2px; margin-bottom: 1rem; }
+    .success-message { font-family: var(--font-serif); font-style: italic; font-size: 1.1rem; color: var(--white-60); line-height: 1.8; max-width: 420px; margin: 0 auto; }
+
+    /* ===== FOOTER ===== */
+    .site-footer { padding: 1.5rem 2rem; text-align: center; border-top: 1px solid var(--glass-border); position: relative; z-index: 1; flex-shrink: 0; margin-top: auto; }
+    .footer-brand { font-family: var(--font-display); font-size: 0.65rem; letter-spacing: 3px; color: var(--gold); display: block; margin-bottom: 0.3rem; }
+    .footer-text { font-family: var(--font-serif); font-style: italic; font-size: 0.8rem; color: var(--white-60); }
+
+    @media (max-width: 600px) {
+      .container { padding: 0 1.25rem; }
+      .site-header { padding: 1rem 1.25rem; }
+      .brand-sub { display: none; }
+      .features { padding: 5rem 0; }
+      .features-grid { grid-template-columns: 1fr; }
+      .feature-card.wide { grid-column: 1; }
+      .phases-list::before { display: none; }
+      .form-wrap { padding: 2rem 1.25rem; }
+      .quote-section, .phases { padding: 4rem 0; }
+      .form-section { padding: 3rem 0 5rem; }
+      .dept-banner { flex-wrap: wrap; justify-content: center; text-align: center; border-radius: 12px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="ambient ambient-1"></div>
+<div class="ambient ambient-2"></div>
+
+<header class="site-header">
+  <div class="brand">Memoir Deja Vu</div>
+  <div class="brand-sub">Your Class Experience</div>
+</header>
+
+<!-- HERO -->
+<section class="cm-hero">
+  <div class="dept-banner">
+    <span class="dept-icon">🎓</span>
+    <span class="dept-name" id="deptName">Your Department</span>
+    <span class="dept-sep">·</span>
+    <span class="dept-school" id="deptSchool">Your University</span>
+  </div>
+  <div class="hero-eyebrow">You've been invited</div>
+  <h1 class="hero-title">
+    Your class is building<br>something <em>extraordinary.</em>
+  </h1>
+  <div class="hero-divider"></div>
+  <p class="hero-sub">
+    Your class rep has started something special — a permanent digital home
+    for every memory, every name, and every feeling from your years together.
+    You're part of it.
+  </p>
+  <a href="#what-inside" class="hero-scroll-cta">See what's being built &nbsp;↓</a>
+</section>
+
+<!-- FEATURES -->
+<section class="features" id="what-inside">
+  <div class="container">
+    <span class="section-label">What's Inside</span>
+    <h2 class="section-title">Everything your class<br>story needs.</h2>
+    <div class="section-divider"></div>
+    <p class="features-intro">
+      This isn't a template. It's a hand-built, fully personalized digital home for your graduating class —
+      alive with every name, every memory, every feeling from your years together.
+    </p>
+    <div class="features-grid">
+      <div class="feature-card">
+        <span class="feature-icon">👑</span>
+        <div class="feature-title">Legacy Wall</div>
+        <div class="feature-desc">Every graduate. Their name, nickname, quote, best memory and future ambition — searchable, filterable, permanent.</div>
+      </div>
+      <div class="feature-card">
+        <span class="feature-icon">🏆</span>
+        <div class="feature-title">Live Class Awards</div>
+        <div class="feature-desc">Real voting. Real results. Most Likely to Succeed, Department Comedian, Silent Genius — voted on by the whole class in real time.</div>
+      </div>
+      <div class="feature-card">
+        <span class="feature-icon">🕊️</span>
+        <div class="feature-title">Confession Wall</div>
+        <div class="feature-desc">Anonymous messages — confessions, apologies, crushes, secrets. Curated and approved before they go live. No names. No drama.</div>
+      </div>
+      <div class="feature-card">
+        <span class="feature-icon">⏳</span>
+        <div class="feature-title">Time Capsule</div>
+        <div class="feature-desc">Every graduate writes a letter to their future self. Sealed digitally. Waiting. The site counts down to the day it opens.</div>
+      </div>
+      <div class="feature-card">
+        <span class="feature-icon">🎵</span>
+        <div class="feature-title">Class Soundtrack</div>
+        <div class="feature-desc">The songs that defined your years — playable right there on the site. Your anthems. Your era.</div>
+      </div>
+      <div class="feature-card">
+        <span class="feature-icon">📸</span>
+        <div class="feature-title">Gallery & Timeline</div>
+        <div class="feature-desc">Your best moments — dinner nights, exam season, first days — organized, captioned. A visual story of four years.</div>
+      </div>
+      <div class="feature-card wide">
+        <span class="feature-icon">🔍</span>
+        <div class="feature-title">Class Archive — A Dedicated Page</div>
+        <div class="feature-desc">A fully searchable, alphabetically filterable archive of every graduate. Click any name and their full profile slides open. On mobile it rises from the bottom. On desktop it glides in from the side. Every single person, remembered properly.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- QUOTE -->
+<section class="quote-section">
+  <div class="container">
+    <p class="big-quote">
+      Ten years from now, someone will open this site and
+      <span>feel everything all over again.</span>
+      Their quote will still be there. Their memory will still be there.
+      The confession that made them cry will still be there.
+    </p>
+    <div class="quote-attr">— Memoir Deja Vu</div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="phases">
+  <div class="container">
+    <span class="section-label">How It Works</span>
+    <h2 class="section-title">Simple. Phased.<br>Done in days.</h2>
+    <div class="section-divider"></div>
+    <div class="phases-list">
+      <div class="phase-item">
+        <div class="phase-number">01</div>
+        <div class="phase-content">
+          <div class="phase-title">Your Rep Commits</div>
+          <div class="phase-desc">Your class rep has already started the process — they've officially opened your class portal with Memoir.</div>
+        </div>
+      </div>
+      <div class="phase-item">
+        <div class="phase-number">02</div>
+        <div class="phase-content">
+          <div class="phase-title">You Submit Your Memory</div>
+          <div class="phase-desc">Right here, right now. One memory from your time together. It gets woven into the final experience.</div>
+        </div>
+      </div>
+      <div class="phase-item">
+        <div class="phase-number">03</div>
+        <div class="phase-content">
+          <div class="phase-title">Media & Content</div>
+          <div class="phase-desc">Photos, music and class details come next. Your rep handles the coordination — you just enjoy the result.</div>
+        </div>
+      </div>
+      <div class="phase-item">
+        <div class="phase-number">04</div>
+        <div class="phase-content">
+          <div class="phase-title">Your Legacy Goes Live</div>
+          <div class="phase-desc">A private link sent to every graduate. Your story, permanently online. Your class, forever remembered.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FORM -->
+<section class="form-section" id="submit-memory">
+  <div class="container">
+    <div class="form-wrap">
+      <div id="formState">
+        <div class="form-dept-tag">
+          <span>🎓</span>
+          <span id="formDeptName">Your Department</span>
+        </div>
+        <div class="form-title">Share Your Memory.</div>
+        <p class="form-sub">
+          One memory. That's all we need from you right now.
+          It will live inside your class experience forever.
+        </p>
+        <div class="fields">
+          <div class="field">
+            <label>Your Full Name</label>
+            <input type="text" id="cmName" placeholder="e.g. Emeka Okafor" autocomplete="name" />
+          </div>
+          <div class="field">
+            <label>Your Level / Year</label>
+            <select id="cmYear">
+              <option value="" disabled selected>Select your year</option>
+              <option>1st Year</option>
+              <option>2nd Year</option>
+              <option>3rd Year</option>
+              <option>4th Year</option>
+              <option>5th Year</option>
+              <option>Final Year</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Your Favourite Memory</label>
+            <textarea id="cmMemory" placeholder="That moment in 300 level when..." maxlength="400" oninput="updateCharCount()"></textarea>
+            <div class="char-count"><span id="charCount">0</span>/400</div>
+          </div>
+        </div>
+        <button class="btn-primary" onclick="submitMemory()">Save My Memory Forever →</button>
+      </div>
+
+      <div class="success-state" id="successState">
+        <span class="success-icon">🕊️</span>
+        <div class="success-title">Your Memory Has Been Saved.</div>
+        <p class="success-message">
+          It will live inside your class experience forever.
+          Watch this space — something beautiful is coming.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="footer-brand">Memoir Deja Vu</div>
+  <div class="footer-text">Powered by Memoir Deja Vu</div>
+</footer>
+
+<script>
+const SB_URL  = 'https://hwswintesajjitlmepnt.supabase.co';
+const SB_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh3c3dpbnRlc2Fqaml0bG1lcG50Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE4NDkwMzQsImV4cCI6MjA4NzQyNTAzNH0.jl8cNK6GCqboXwhPHLmlLO0_Fj-kBbEnKLtwgd7R-K0';
+
+const params = new URLSearchParams(window.location.search);
+const dept   = params.get('dept')  || 'Your Department';
+const uni    = params.get('uni')   || 'Your University';
+const grad   = params.get('grad')  || '';
+const token  = params.get('token') || '';
+
+document.getElementById('deptName').textContent    = dept;
+document.getElementById('deptSchool').textContent  = `${uni}${grad ? ' · ' + grad : ''}`;
+document.getElementById('formDeptName').textContent = dept;
+
+/* Scroll reveal */
+const obs = new IntersectionObserver((entries) => {
+  entries.forEach((e, i) => {
+    if (e.isIntersecting) {
+      setTimeout(() => e.target.classList.add('visible'), i * 80);
+      obs.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.12 });
+document.querySelectorAll('.feature-card, .phase-item').forEach(el => obs.observe(el));
+
+function updateCharCount() {
+  document.getElementById('charCount').textContent = document.getElementById('cmMemory').value.length;
+}
+
+async function submitMemory() {
+  const name   = document.getElementById('cmName').value.trim();
+  const year   = document.getElementById('cmYear').value;
+  const memory = document.getElementById('cmMemory').value.trim();
+
+  let valid = true;
+  [['cmName', name], ['cmMemory', memory]].forEach(([id, val]) => {
+    const el = document.getElementById(id);
+    el.classList.remove('error');
+    if (!val) { el.classList.add('error'); valid = false; }
+  });
+  if (!year) { document.getElementById('cmYear').classList.add('error'); valid = false; }
+  if (!valid) return;
+
+  const btn = document.querySelector('.btn-primary');
+  btn.disabled = true;
+  btn.textContent = 'Saving your memory...';
+
+  try {
+    await fetch(`${SB_URL}/rest/v1/classmate_memories`, {
+      method: 'POST',
+      headers: { 'apikey': SB_ANON, 'Authorization': `Bearer ${SB_ANON}`, 'Content-Type': 'application/json', 'Prefer': 'return=representation' },
+      body: JSON.stringify({ name, year, memory, dept_token: token, dept_name: dept, uni_name: uni, grad_year: grad })
+    });
+  } catch(e) { console.error('Error:', e); }
+
+  document.getElementById('formState').style.display    = 'none';
+  document.getElementById('successState').style.display = 'block';
+  window.scrollTo({ top: document.getElementById('submit-memory').offsetTop - 80, behavior: 'smooth' });
+}
+
+document.querySelectorAll('input, textarea, select').forEach(el => {
+  el.addEventListener('input',  () => el.classList.remove('error'));
+  el.addEventListener('change', () => el.classList.remove('error'));
+});
+</script>
+
+</body>
+</html>

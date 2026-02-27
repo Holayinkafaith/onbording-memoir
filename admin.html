@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Memoir Admin — Internal Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600&family=Cinzel:wght@400;600&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --navy:        #060e1c;
+      --navy-mid:    #0b1730;
+      --navy-light:  #142444;
+      --gold:        #c9a84c;
+      --gold-dim:    #7a5f2a;
+      --gold-glow:   rgba(201,168,76,0.1);
+      --white:       #ffffff;
+      --white-90:    rgba(255,255,255,0.9);
+      --white-60:    rgba(255,255,255,0.55);
+      --glass:       rgba(255,255,255,0.04);
+      --glass-border:rgba(201,168,76,0.18);
+      --green:       #27ae60;
+      --red:         #e74c3c;
+      --font-display:'Cinzel', serif;
+      --font-serif:  'Cormorant Garamond', serif;
+      --font-body:   'Lato', sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--navy);
+      color: var(--white);
+      font-family: var(--font-body);
+      min-height: 100vh;
+    }
+
+    /* ===== LOGIN GATE ===== */
+    #loginGate {
+      min-height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+      padding: 2rem;
+    }
+    .login-box {
+      background: var(--navy-mid);
+      border: 1px solid var(--glass-border);
+      border-radius: 12px;
+      padding: 3rem 2.5rem;
+      max-width: 380px;
+      width: 100%;
+      text-align: center;
+    }
+    .login-brand {
+      font-family: var(--font-display);
+      font-size: 0.75rem;
+      letter-spacing: 4px;
+      color: var(--gold);
+      margin-bottom: 0.5rem;
+    }
+    .login-title {
+      font-family: var(--font-serif);
+      font-size: 1.5rem;
+      color: var(--white);
+      margin-bottom: 0.5rem;
+    }
+    .login-sub {
+      font-family: var(--font-serif);
+      font-style: italic;
+      font-size: 0.9rem;
+      color: var(--white-60);
+      margin-bottom: 2rem;
+    }
+    .login-box input {
+      width: 100%;
+      background: var(--glass);
+      border: 1px solid var(--glass-border);
+      color: var(--white);
+      font-family: var(--font-body);
+      font-size: 1rem;
+      padding: 0.85rem 1rem;
+      border-radius: 8px;
+      outline: none;
+      text-align: center;
+      letter-spacing: 3px;
+      margin-bottom: 1rem;
+      transition: border-color 0.3s;
+    }
+    .login-box input:focus { border-color: var(--gold); }
+    .login-btn {
+      width: 100%;
+      padding: 0.85rem;
+      background: linear-gradient(135deg, var(--gold-dim), var(--gold));
+      color: var(--navy);
+      font-family: var(--font-display);
+      font-size: 0.7rem;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      font-weight: 700;
+      border: none; border-radius: 8px;
+      cursor: pointer;
+    }
+    .login-error {
+      color: var(--red);
+      font-size: 0.8rem;
+      margin-top: 0.75rem;
+      display: none;
+    }
+
+    /* ===== DASHBOARD ===== */
+    #dashboard { display: none; }
+
+    .dash-header {
+      background: var(--navy-mid);
+      border-bottom: 1px solid var(--glass-border);
+      padding: 1.25rem 2rem;
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 1rem;
+      position: sticky; top: 0; z-index: 100;
+    }
+    .dash-brand {
+      font-family: var(--font-display);
+      font-size: 0.7rem;
+      letter-spacing: 4px;
+      color: var(--gold);
+    }
+    .dash-actions { display: flex; gap: 0.75rem; align-items: center; }
+    .refresh-btn {
+      padding: 0.5rem 1rem;
+      border: 1px solid var(--glass-border);
+      background: transparent;
+      color: var(--white-60);
+      font-family: var(--font-body);
+      font-size: 0.65rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .refresh-btn:hover { border-color: var(--gold); color: var(--gold); }
+    .logout-btn {
+      padding: 0.5rem 1rem;
+      border: 1px solid rgba(231,76,60,0.3);
+      background: transparent;
+      color: var(--red);
+      font-family: var(--font-body);
+      font-size: 0.65rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    /* Stats row */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+      padding: 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .stat-card {
+      background: var(--glass);
+      border: 1px solid var(--glass-border);
+      border-radius: 10px;
+      padding: 1.25rem;
+      position: relative; overflow: hidden;
+    }
+    .stat-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(to right, transparent, var(--gold), transparent);
+    }
+    .stat-number {
+      font-family: var(--font-display);
+      font-size: 2.2rem;
+      color: var(--gold);
+      display: block;
+      margin-bottom: 0.25rem;
+    }
+    .stat-label {
+      font-family: var(--font-body);
+      font-size: 0.65rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--white-60);
+    }
+
+    /* Tabs */
+    .tabs {
+      display: flex; gap: 0;
+      border-bottom: 1px solid var(--glass-border);
+      padding: 0 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .tab-btn {
+      padding: 1rem 1.5rem;
+      border: none; background: transparent;
+      color: var(--white-60);
+      font-family: var(--font-body);
+      font-size: 0.7rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: all 0.3s;
+      margin-bottom: -1px;
+    }
+    .tab-btn.active { color: var(--gold); border-bottom-color: var(--gold); }
+    .tab-btn:hover  { color: var(--white-90); }
+
+    /* Content */
+    .tab-content { display: none; padding: 2rem; max-width: 1200px; margin: 0 auto; }
+    .tab-content.active { display: block; }
+
+    /* Lead cards */
+    .leads-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 1rem;
+    }
+    .lead-card {
+      background: var(--glass);
+      border: 1px solid var(--glass-border);
+      border-radius: 10px;
+      padding: 1.5rem;
+      position: relative;
+      transition: border-color 0.3s;
+    }
+    .lead-card:hover { border-color: rgba(201,168,76,0.35); }
+    .lead-card-top {
+      display: flex; justify-content: space-between;
+      align-items: flex-start; gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+    .lead-dept {
+      font-family: var(--font-display);
+      font-size: 0.72rem;
+      letter-spacing: 1px;
+      color: var(--gold);
+      text-transform: uppercase;
+      line-height: 1.4;
+    }
+    .intent-badge {
+      font-size: 0.58rem;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      padding: 0.2rem 0.6rem;
+      border-radius: 20px;
+      flex-shrink: 0;
+    }
+    .intent-badge.ready    { background: rgba(39,174,96,0.15); color: var(--green); border: 1px solid rgba(39,174,96,0.3); }
+    .intent-badge.interested { background: var(--gold-glow); color: var(--gold); border: 1px solid var(--gold-dim); }
+    .intent-badge.exploring { background: var(--glass); color: var(--white-60); border: 1px solid var(--glass-border); }
+    .intent-badge.submitted { background: rgba(39,174,96,0.15); color: var(--green); border: 1px solid rgba(39,174,96,0.3); }
+
+    .lead-row {
+      display: flex; align-items: center; gap: 0.6rem;
+      margin-bottom: 0.5rem;
+      font-size: 0.85rem;
+      color: var(--white-60);
+    }
+    .lead-row strong { color: var(--white-90); }
+    .lead-row-icon { font-size: 0.75rem; flex-shrink: 0; }
+
+    .lead-actions {
+      display: flex; gap: 0.5rem; margin-top: 1.25rem; flex-wrap: wrap;
+    }
+    .wa-link {
+      flex: 1;
+      display: flex; align-items: center; justify-content: center; gap: 0.4rem;
+      padding: 0.6rem 0.75rem;
+      background: #25d366;
+      color: white;
+      font-family: var(--font-body);
+      font-size: 0.65rem;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      font-weight: 700;
+      border-radius: 6px;
+      text-decoration: none;
+      transition: opacity 0.3s;
+    }
+    .wa-link:hover { opacity: 0.85; }
+    .lead-date {
+      font-size: 0.6rem;
+      color: var(--white-60);
+      margin-top: 0.75rem;
+      font-style: italic;
+    }
+
+    /* Memory cards */
+    .memories-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1rem;
+    }
+    .memory-card {
+      background: var(--glass);
+      border: 1px solid var(--glass-border);
+      border-radius: 10px;
+      padding: 1.5rem;
+      position: relative; overflow: hidden;
+    }
+    .memory-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(to right, transparent, var(--gold), transparent);
+    }
+    .memory-dept-tag {
+      font-family: var(--font-body);
+      font-size: 0.6rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 0.6rem;
+      display: block;
+    }
+    .memory-text {
+      font-family: var(--font-serif);
+      font-style: italic;
+      font-size: 1rem;
+      color: var(--white-90);
+      line-height: 1.75;
+      margin-bottom: 0.75rem;
+    }
+    .memory-meta {
+      font-size: 0.7rem;
+      color: var(--white-60);
+      display: flex; justify-content: space-between;
+    }
+
+    /* Loading / empty */
+    .empty-state {
+      text-align: center;
+      padding: 4rem 2rem;
+      grid-column: 1 / -1;
+    }
+    .empty-state p {
+      font-family: var(--font-serif);
+      font-style: italic;
+      color: var(--white-60);
+      font-size: 1.1rem;
+    }
+    .loading-dots {
+      display: inline-flex; gap: 6px; align-items: center;
+    }
+    .loading-dots span {
+      width: 6px; height: 6px; background: var(--gold);
+      border-radius: 50%;
+      animation: dotPulse 1.2s ease-in-out infinite;
+    }
+    .loading-dots span:nth-child(2) { animation-delay: 0.2s; }
+    .loading-dots span:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes dotPulse {
+      0%,80%,100% { transform: scale(0.6); opacity: 0.4; }
+      40%          { transform: scale(1);   opacity: 1; }
+    }
+
+    @media (max-width: 768px) {
+      .stats-row { grid-template-columns: repeat(2, 1fr); padding: 1rem; }
+      .tabs { padding: 0 1rem; overflow-x: auto; }
+      .tab-content { padding: 1rem; }
+      .leads-grid, .memories-grid { grid-template-columns: 1fr; }
+      .dash-header { padding: 1rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ===== LOGIN GATE ===== -->
+<div id="loginGate">
+  <div class="login-box">
+    <div class="login-brand">Memoir Deja Vu</div>
+    <h2 class="login-title">Admin Dashboard</h2>
+    <p class="login-sub">Internal use only. Enter your access code.</p>
+    <input
+      type="password"
+      id="passwordInput"
+      placeholder="••••••••"
+      onkeydown="if(event.key==='Enter') checkPassword()"
+    />
+    <button class="login-btn" onclick="checkPassword()">Enter Dashboard</button>
+    <div class="login-error" id="loginError">Incorrect access code. Try again.</div>
+  </div>
+</div>
+
+<!-- ===== DASHBOARD ===== -->
+<div id="dashboard">
+
+  <div class="dash-header">
+    <div class="dash-brand">Memoir Deja Vu — Admin</div>
+    <div class="dash-actions">
+      <button class="refresh-btn" onclick="loadAll()">↻ Refresh</button>
+      <button class="logout-btn" onclick="logout()">Log Out</button>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <span class="stat-number" id="statLeads">—</span>
+      <span class="stat-label">Total Leads</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-number" id="statReady">—</span>
+      <span class="stat-label">Ready to Launch</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-number" id="statMemories">—</span>
+      <span class="stat-label">Memories Submitted</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-number" id="statDepts">—</span>
+      <span class="stat-label">Departments</span>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('leads')">Class Reps</button>
+    <button class="tab-btn" onclick="switchTab('memories')">Classmate Memories</button>
+  </div>
+
+  <!-- Leads Tab -->
+  <div class="tab-content active" id="tab-leads">
+    <div class="leads-grid" id="leadsGrid">
+      <div class="empty-state">
+        <div class="loading-dots"><span></span><span></span><span></span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Memories Tab -->
+  <div class="tab-content" id="tab-memories">
+    <div class="memories-grid" id="memoriesGrid">
+      <div class="empty-state">
+        <div class="loading-dots"><span></span><span></span><span></span></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const SB_URL   = 'https://hwswintesajjitlmepnt.supabase.co';
+const SB_ANON  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh3c3dpbnRlc2Fqaml0bG1lcG50Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE4NDkwMzQsImV4cCI6MjA4NzQyNTAzNH0.jl8cNK6GCqboXwhPHLmlLO0_Fj-kBbEnKLtwgd7R-K0';
+const ADMIN_PW = 'memoir2028admin';
+
+/* ===== AUTH ===== */
+function checkPassword() {
+  const val = document.getElementById('passwordInput').value;
+  if (val === ADMIN_PW) {
+    document.getElementById('loginGate').style.display  = 'none';
+    document.getElementById('dashboard').style.display  = 'block';
+    sessionStorage.setItem('memoir_admin', '1');
+    loadAll();
+  } else {
+    document.getElementById('loginError').style.display = 'block';
+    document.getElementById('passwordInput').value = '';
+  }
+}
+
+function logout() {
+  sessionStorage.removeItem('memoir_admin');
+  location.reload();
+}
+
+// Auto-login if session exists
+if (sessionStorage.getItem('memoir_admin') === '1') {
+  document.getElementById('loginGate').style.display  = 'none';
+  document.getElementById('dashboard').style.display  = 'block';
+  loadAll();
+}
+
+/* ===== FETCH ===== */
+async function sbFetch(table, params = '') {
+  const res = await fetch(`${SB_URL}/rest/v1/${table}?${params}&order=created_at.desc`, {
+    headers: {
+      'apikey':        SB_ANON,
+      'Authorization': `Bearer ${SB_ANON}`
+    }
+  });
+  return res.json();
+}
+
+/* ===== LOAD ALL ===== */
+async function loadAll() {
+  await Promise.all([loadLeads(), loadMemories()]);
+}
+
+/* ===== LEADS ===== */
+async function loadLeads() {
+  const grid = document.getElementById('leadsGrid');
+  grid.innerHTML = '<div class="empty-state"><div class="loading-dots"><span></span><span></span><span></span></div></div>';
+
+  try {
+    const leads = await sbFetch('leads');
+
+    // Stats
+    document.getElementById('statLeads').textContent   = leads.length;
+    const ready = leads.filter(l => l.intent === 'ready' || l.intent === 'submitted').length;
+    document.getElementById('statReady').textContent   = ready;
+    const depts = new Set(leads.map(l => l.dept_name).filter(Boolean));
+    document.getElementById('statDepts').textContent   = depts.size;
+
+    if (!leads.length) {
+      grid.innerHTML = '<div class="empty-state"><p>No leads yet. Share the onboarding link to get started.</p></div>';
+      return;
+    }
+
+    grid.innerHTML = leads.map(l => {
+      const intentClass = l.intent === 'ready' || l.intent === 'submitted' ? 'ready'
+                        : l.intent === 'interested' ? 'interested' : 'exploring';
+      const intentLabel = l.intent === 'submitted' ? 'Submitted' : (l.intent || 'Exploring');
+      const date        = new Date(l.created_at).toLocaleDateString('en-GB', {
+        day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
+      });
+      const waHref = l.rep_whatsapp
+        ? `https://wa.me/${l.rep_whatsapp.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(`Hi ${l.rep_name || 'there'} 👋 This is Memoir Deja Vu reaching out about your class experience for ${l.dept_name || 'your department'}. Let's get started!`)}`
+        : '#';
+
+      return `
+        <div class="lead-card">
+          <div class="lead-card-top">
+            <div class="lead-dept">${l.dept_name || 'Unknown Dept'}</div>
+            <span class="intent-badge ${intentClass}">${intentLabel}</span>
+          </div>
+          <div class="lead-row"><span class="lead-row-icon">👤</span><strong>${l.rep_name || '—'}</strong></div>
+          <div class="lead-row"><span class="lead-row-icon">🏫</span>${l.school_name || '—'}</div>
+          <div class="lead-row"><span class="lead-row-icon">📅</span>${l.grad_year || '—'}</div>
+          ${l.student_count ? `<div class="lead-row"><span class="lead-row-icon">👥</span>${l.student_count} students · ₦${(l.student_count * 3000).toLocaleString('en-NG')}</div>` : ''}
+          <div class="lead-row"><span class="lead-row-icon">📱</span>${l.rep_whatsapp || '—'}</div>
+          <div class="lead-row"><span class="lead-row-icon">📧</span>${l.rep_email || '—'}</div>
+          <div class="lead-actions">
+            <a class="wa-link" href="${waHref}" target="_blank">📲 WhatsApp</a>
+          </div>
+          <div class="lead-date">${date}</div>
+        </div>
+      `;
+    }).join('');
+
+  } catch(e) {
+    grid.innerHTML = '<div class="empty-state"><p>Error loading leads. Check your connection.</p></div>';
+  }
+}
+
+/* ===== MEMORIES ===== */
+async function loadMemories() {
+  const grid = document.getElementById('memoriesGrid');
+  grid.innerHTML = '<div class="empty-state"><div class="loading-dots"><span></span><span></span><span></span></div></div>';
+
+  try {
+    const memories = await sbFetch('classmate_memories');
+    document.getElementById('statMemories').textContent = memories.length;
+
+    if (!memories.length) {
+      grid.innerHTML = '<div class="empty-state"><p>No memories yet. Share the classmate link to start collecting.</p></div>';
+      return;
+    }
+
+    grid.innerHTML = memories.map(m => {
+      const date = new Date(m.created_at).toLocaleDateString('en-GB', {
+        day: 'numeric', month: 'short', year: 'numeric'
+      });
+      return `
+        <div class="memory-card">
+          <span class="memory-dept-tag">${m.dept_name || 'Unknown'} · ${m.grad_year || ''}</span>
+          <div class="memory-text">"${m.memory}"</div>
+          <div class="memory-meta">
+            <span>— ${m.name || 'Anonymous'}, ${m.year || ''}</span>
+            <span>${date}</span>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+  } catch(e) {
+    grid.innerHTML = '<div class="empty-state"><p>Error loading memories.</p></div>';
+  }
+}
+
+/* ===== TABS ===== */
+function switchTab(tab) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById(`tab-${tab}`).classList.add('active');
+}
+
+/* Enter key on password */
+document.getElementById('passwordInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') checkPassword();
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Memoir Deja Vu — Start Your Class Experience</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600&family=Cinzel:wght@400;600;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+
+
+  <style>
+    /* ===== VARIABLES (from landing.html) ===== */
+    :root {
+      --navy:        #070f1e;
+      --navy-mid:    #0c1a35;
+      --navy-light:  #162848;
+      --gold:        #c9a84c;
+      --gold-light:  #e8c97a;
+      --gold-dim:    #7a5f2a;
+      --gold-glow:   rgba(201,168,76,0.15);
+      --white:       #ffffff;
+      --white-90:    rgba(255,255,255,0.9);
+      --white-60:    rgba(255,255,255,0.6);
+      --white-20:    rgba(255,255,255,0.2);
+      --white-10:    rgba(255,255,255,0.07);
+      --glass:       rgba(255,255,255,0.05);
+      --glass-border:rgba(201,168,76,0.2);
+      --red:         #e74c3c;
+      --green:       #27ae60;
+      --font-display:'Cinzel', serif;
+      --font-serif:  'Cormorant Garamond', serif;
+      --font-body:   'Lato', sans-serif;
+      --ease:        cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      --ease-spring: cubic-bezier(0.34, 1.1, 0.64, 1);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; font-size: 16px; }
+    body {
+      background: var(--navy);
+      color: var(--white);
+      font-family: var(--font-body);
+      line-height: 1.7;
+      overflow-x: hidden;
+      min-height: 100vh;
+      opacity: 0;
+      animation: pageIn 0.8s var(--ease) 0.1s forwards;
+    }
+    @keyframes pageIn { to { opacity: 1; } }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: var(--navy); }
+    ::-webkit-scrollbar-thumb { background: var(--gold-dim); border-radius: 3px; }
+
+    /* Noise texture */
+    body::before {
+      content: '';
+      position: fixed; inset: 0; z-index: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none; opacity: 0.4;
+    }
+
+    /* Ambient glow blobs */
+    .blob {
+      position: fixed; z-index: 0; border-radius: 50%;
+      filter: blur(120px); pointer-events: none;
+    }
+    .blob-1 {
+      width: 600px; height: 600px; top: -200px; right: -200px;
+      background: radial-gradient(circle, rgba(201,168,76,0.08) 0%, transparent 70%);
+      animation: drift1 20s ease-in-out infinite alternate;
+    }
+    .blob-2 {
+      width: 500px; height: 500px; bottom: -100px; left: -150px;
+      background: radial-gradient(circle, rgba(10,40,100,0.3) 0%, transparent 70%);
+      animation: drift2 25s ease-in-out infinite alternate;
+    }
+    @keyframes drift1 { from { transform: translate(0,0); } to { transform: translate(-60px,80px); } }
+    @keyframes drift2 { from { transform: translate(0,0); } to { transform: translate(80px,-60px); } }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeIn { to { opacity: 1; } }
+
+    /* ===== SCREEN SYSTEM ===== */
+    .screen {
+      display: none;
+      min-height: 100vh;
+      position: relative; z-index: 1;
+      animation: screenIn 0.6s var(--ease) forwards;
+    }
+    .screen.active { display: flex; flex-direction: column; }
+    @keyframes screenIn {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ===== HEADER ===== */
+    .site-header {
+      padding: 1.25rem 2rem;
+      display: flex; align-items: center; justify-content: space-between;
+      border-bottom: 1px solid var(--glass-border);
+      background: linear-gradient(to bottom, rgba(7,15,30,0.98) 0%, rgba(7,15,30,0.95) 100%);
+      backdrop-filter: blur(12px);
+      flex-shrink: 0;
+      position: relative; z-index: 10;
+    }
+    /* On welcome screen make it sticky */
+    #screen-welcome .site-header {
+      position: sticky; top: 0;
+    }
+    .brand {
+      font-family: var(--font-display);
+      font-size: 0.75rem;
+      letter-spacing: 4px;
+      color: var(--gold);
+      text-transform: uppercase;
+    }
+    .brand-sub {
+      font-family: var(--font-serif);
+      font-style: italic;
+      font-size: 0.8rem;
+      color: var(--white-60);
+    }
+
+    /* ===== WELCOME HERO ===== */
+    .welcome-inner {
+      position: relative; z-index: 1;
+      flex: 1; display: flex; flex-direction: column;
+      justify-content: center; align-items: center;
+      text-align: center;
+      padding: 8rem 2rem 6rem;
+      min-height: 92vh;
+    }
+    /* Decorative vertical lines like landing */
+    .welcome-inner::before, .welcome-inner::after {
+      content: '';
+      position: absolute; left: 50%; transform: translateX(-50%);
+      width: 1px;
+      background: linear-gradient(to bottom, transparent, var(--gold-dim), transparent);
+    }
+    .welcome-inner::before { top: 0; height: 100px; }
+    .welcome-inner::after  { bottom: 0; height: 100px; }
+
+    .welcome-eyebrow {
+      font-family: var(--font-body);
+      font-size: 0.65rem;
+      letter-spacing: 6px;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 2rem;
+      opacity: 0;
+      animation: fadeUp 0.8s var(--ease) 0.3s forwards;
+    }
+    .welcome-title {
+      font-family: var(--font-display);
+      font-size: clamp(2.5rem, 8vw, 5.5rem);
+      line-height: 1.05;
+      letter-spacing: 2px;
+      color: var(--white);
+      margin-bottom: 1.5rem;
+      opacity: 0;
+      animation: fadeUp 0.9s var(--ease) 0.5s forwards;
+    }
+    .welcome-title em {
+      font-style: italic;
+      color: var(--gold);
+      font-family: var(--font-serif);
+      font-weight: 300;
+    }
+    .welcome-divider {
+      width: 60px; height: 1px;
+      background: linear-gradient(to right, transparent, var(--gold), transparent);
+      margin: 0 auto 3rem;
+      opacity: 0;
+      animation: fadeUp 1s var(--ease) 0.6s forwards;
+    }
+    .welcome-sub {
+      font-family: var(--font-serif);
+      font-style: italic;
+      font-size: clamp(1.1rem, 2.5vw, 1.5rem);
+      color: var(--white-60);
+      line-height: 1.8;
+      max-width: 560px;
+      margin: 0 auto 3rem;
+      opacity: 0;
+      animation: fadeUp 1s var(--ease) 0.7s forwards;
+    }
+    .welcome-cta {
+      display: inline-flex; align-items: center; gap: 0.75rem;
+      padding: 1.1rem 3rem;
+      background: linear-gradient(135deg, var(--gold-dim), var(--gold));
+      color: var(--navy);
+      font-family: var(--font-display);
+      font-size: 0.75rem;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      font-weight: 700;
+      border: none; border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.4s var(--ease);
+      position: relative; overflow: hidden;
+    }
+    .welcome-cta::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: rgba(255,255,255,0.15);
+      transform: scaleX(0); transform-origin: left;
+      transition: transform 0.4s var(--ease);
+    }
+    .welcome-cta:hover { transform: translateY(-3px); box-shadow: 0 20px 50px rgba(201,168,76,0.3); }
+    .welcome-cta:hover::after { transform: scaleX(1); }
+
+    /* Floating quotes behind hero */
+    .floating-quotes {
+      position: absolute; width: 100%; height: 100%;
+      top: 0; left: 0; pointer-events: none; overflow: hidden;
+    }
+    .fq {
+      position: absolute;
+      font-family: var(--font-serif); font-style: italic;
+      color: rgba(201,168,76,0.05);
+      font-size: clamp(0.75rem, 1.5vw, 1rem);
+      white-space: nowrap;
+      animation: floatAcross linear infinite;
+    }
+    @keyframes floatAcross {
+      from { transform: translateX(-100%); }
+      to   { transform: translateX(110vw); }
+    }
+
+    /* ===== FORM SCREENS ===== */
+    .form-screen-inner {
+      flex: 1;
+      display: flex; flex-direction: column;
+      justify-content: center;
+      max-width: 560px;
+      margin: 0 auto;
+      padding: 3rem 2rem;
+      width: 100%;
+    }
+
+    /* Progress bar */
+    .progress-bar-wrap {
+      height: 2px;
+      background: var(--glass-border);
+      margin-bottom: 2.5rem;
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(to right, var(--gold-dim), var(--gold));
+      border-radius: 2px;
+      transition: width 0.6s var(--ease);
+    }
+
+    .screen-label {
+      font-family: var(--font-body);
+      font-size: 0.6rem;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 0.75rem;
+    }
+    .screen-title {
+      font-family: var(--font-display);
+      font-size: clamp(1.6rem, 4vw, 2.4rem);
+      color: var(--white); letter-spacing: 1px;
+      line-height: 1.2; margin-bottom: 0.75rem;
+    }
+    .screen-sub {
+      font-family: var(--font-serif);
+      font-style: italic;
+      font-size: 0.95rem;
+      color: var(--white-60);
+      margin-bottom: 2.5rem;
+      line-height: 1.7;
+    }
+
+    /* Fields — landing.html style */
+    .fields { display: flex; flex-direction: column; gap: 1.1rem; }
+    .field  { display: flex; flex-direction: column; gap: 0.4rem; }
+    .field label {
+      font-family: var(--font-body);
+      font-size: 0.65rem; letter-spacing: 2.5px;
+      text-transform: uppercase; color: var(--gold);
+    }
+    .field input, .field select {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--glass-border);
+      color: var(--white); font-family: var(--font-body);
+      font-size: 0.95rem; padding: 0.85rem 1rem;
+      border-radius: 8px; outline: none;
+      transition: border-color 0.3s, background 0.3s;
+      width: 100%; -webkit-appearance: none;
+    }
+    .field input:focus, .field select:focus {
+      border-color: var(--gold); background: rgba(201,168,76,0.04);
+    }
+    .field input::placeholder { color: rgba(255,255,255,0.3); font-style: italic; }
+    .field input.error { border-color: var(--red); }
+    .field select option { background: var(--navy-mid); color: var(--white); }
+
+    /* Action row */
+    .action-row {
+      display: flex; gap: 1rem;
+      margin-top: 2rem;
+      flex-wrap: wrap;
+    }
+    .btn-primary {
+      flex: 1;
+      padding: 1rem;
+      background: linear-gradient(135deg, var(--gold-dim), var(--gold));
+      color: var(--navy);
+      font-family: var(--font-display);
+      font-size: 0.7rem;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      font-weight: 700;
+      border: none; border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s var(--ease);
+      min-height: 52px;
+    }
+    .btn-primary:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 15px 40px rgba(201,168,76,0.25);
+    }
+    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn-ghost {
+      padding: 1rem 1.25rem;
+      border: 1px solid var(--glass-border);
+      background: transparent;
+      color: var(--white-60);
+      font-family: var(--font-body);
+      font-size: 0.7rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .btn-ghost:hover { border-color: var(--gold); color: var(--gold); }
+
+    /* ===== PRICE CALCULATOR ===== */
+    #screen-price .form-screen-inner { text-align: center; }
+    .price-input-wrap {
+      position: relative;
+      margin-bottom: 2rem;
+    }
+    .price-input-wrap input {
+      font-size: 3rem;
+      text-align: center;
+      font-family: var(--font-display);
+      color: var(--gold);
+      background: transparent;
+      border: none;
+      border-bottom: 2px solid var(--glass-border);
+      border-radius: 0;
+      padding: 0.5rem;
+      width: 100%;
+      outline: none;
+      transition: border-color 0.3s;
+    }
+    .price-input-wrap input:focus { border-color: var(--gold); }
+    .price-input-wrap input::placeholder { color: rgba(201,168,76,0.3); font-size: 2.5rem; }
+    .price-input-hint {
+      font-family: var(--font-serif);
+      font-style: italic;
+      font-size: 0.85rem;
+      color: var(--white-60);
+      margin-top: 0.5rem;
+    }
+
+    .price-display {
+      background: var(--glass);
+      border: 1px solid var(--glass-border);
+      border-radius: 12px;
+      padding: 2rem 1.5rem;
+      margin-bottom: 1.5rem;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+      position: relative; overflow: hidden;
+    }
+    .price-display::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(to right, transparent, var(--gold), transparent);
+    }
+    .price-display.visible { opacity: 1; }
+    .price-equation {
+      font-family: var(--font-serif);
+      font-size: 1.1rem;
+      color: var(--white-60);
+      margin-bottom: 0.75rem;
+    }
+    .price-total {
+      font-family: var(--font-display);
+      font-size: clamp(2rem, 6vw, 3.5rem);
+      color: var(--gold);
+      letter-spacing: 1px;
+      margin-bottom: 1rem;
+      animation: countUp 0.3s var(--ease);
+    }
+    @keyframes countUp {
+      from { transform: scale(0.9); opacity: 0.5; }
+      to   { transform: scale(1);   opacity: 1; }
+    }
+    .price-reframe {
+      font-family: var(--font-serif);
+      font-style: italic;
+      font-size: 1rem;
+      color: var(--white-90);
+      line-height: 1.7;
+      padding-top: 1rem;
+      border-top: 1px solid var(--glass-border);
+    }
+    .price-reframe span { color: var(--gold); }
+
+    /* ===== CONFIRMATION / SHARE ===== */
+    #screen-confirm .form-screen-inner {
+      text-align: center;
+      align-items: center;
+    }
+    .confirm-seal {
+      width: 90px; height: 90px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--gold-dim), var(--gold));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2.2rem;
+      margin: 0 auto 2rem;
+      box-shadow: 0 0 60px rgba(201,168,76,0.25);
+      animation: sealPulse 3s ease-in-out infinite;
+    }
+    @keyframes sealPulse {
+      0%,100% { box-shadow: 0 0 40px rgba(201,168,76,0.2); }
+      50%      { box-shadow: 0 0 80px rgba(201,168,76,0.4); }
+    }
+    .confirm-title {
+      font-family: var(--font-display);
+      font-size: clamp(1.2rem, 3vw, 1.8rem);
+      color: var(--gold);
+      letter-spacing: 2px;
+      margin-bottom: 0.75rem;
+    }
+    .confirm-dept {
+      font-family: var(--font-serif);
+      font-style: italic;
+      font-size: 1.1rem;
+      color: var(--white-60);
+      margin-bottom: 2rem;
+    }
+    .confirm-message {
+      font-family: var(--font-serif);
+      font-style: italic;
+      font-size: 1rem;
+      color: var(--white-60);
+      line-height: 1.8;
+      margin-bottom: 2rem;
+      max-width: 420px;
+    }
+
+    /* Share link box */
+    .share-box {
+      background: var(--glass);
+      border: 1px solid var(--glass-border);
+      border-radius: 10px;
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 1.5rem;
+      width: 100%;
+      max-width: 440px;
+      position: relative;
+    }
+    .share-box-label {
+      font-family: var(--font-body);
+      font-size: 0.6rem;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 0.6rem;
+      display: block;
+    }
+    .share-link-text {
+      font-family: var(--font-body);
+      font-size: 0.85rem;
+      color: var(--white-90);
+      word-break: break-all;
+      margin-bottom: 0.75rem;
+    }
+    .copy-btn {
+      padding: 0.5rem 1.25rem;
+      border: 1px solid var(--gold);
+      background: transparent;
+      color: var(--gold);
+      font-family: var(--font-body);
+      font-size: 0.65rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      width: 100%;
+    }
+    .copy-btn:hover, .copy-btn.copied {
+      background: var(--gold);
+      color: var(--navy);
+    }
+
+    .whatsapp-btn {
+      display: flex; align-items: center; justify-content: center; gap: 0.75rem;
+      padding: 1rem;
+      background: #25d366;
+      color: white;
+      font-family: var(--font-display);
+      font-size: 0.7rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      font-weight: 700;
+      border: none; border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s var(--ease);
+      text-decoration: none;
+      width: 100%;
+      max-width: 440px;
+      margin-bottom: 1rem;
+    }
+    .whatsapp-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(37,211,102,0.3); }
+
+    /* ===== FOOTER ===== */
+    .site-footer {
+      padding: 1.5rem 2rem; text-align: center;
+      border-top: 1px solid var(--glass-border);
+      position: relative; z-index: 1; flex-shrink: 0;
+    }
+    .footer-text {
+      font-family: var(--font-serif); font-style: italic;
+      font-size: 0.8rem; color: var(--white-60);
+    }
+    .footer-brand {
+      font-family: var(--font-display);
+      font-size: 0.65rem; letter-spacing: 3px; color: var(--gold);
+      display: block; margin-bottom: 0.3rem;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ===== FEATURES SECTION ===== */
+    .welcome-section {
+      position: relative; z-index: 1;
+      padding: 6rem 2rem;
+      max-width: 860px;
+      margin: 0 auto;
+      width: 100%;
+    }
+    .section-eyebrow {
+      font-family: var(--font-body);
+      font-size: 0.6rem;
+      letter-spacing: 5px;
+      text-transform: uppercase;
+      color: var(--gold);
+      display: block;
+      margin-bottom: 0.75rem;
+      text-align: center;
+    }
+    .section-heading {
+      font-family: var(--font-serif);
+      font-weight: 300;
+      font-size: clamp(1.8rem, 4vw, 2.8rem);
+      color: var(--white);
+      line-height: 1.2;
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+    .section-divider {
+      width: 50px; height: 1px;
+      background: linear-gradient(to right, transparent, var(--gold), transparent);
+      margin: 0 auto 3rem;
+    }
+    .section-intro {
+      font-family: var(--font-serif);
+      font-style: italic;
+      font-size: 1.1rem;
+      color: var(--white-60);
+      line-height: 1.9;
+      text-align: center;
+      max-width: 580px;
+      margin: 0 auto 3.5rem;
+    }
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+    }
+    .feature-card {
+      background: var(--glass);
+      border: 1px solid var(--glass-border);
+      border-radius: 10px;
+      padding: 1.75rem 1.5rem;
+      position: relative; overflow: hidden;
+      opacity: 0; transform: translateY(20px);
+      transition: opacity 0.5s ease, transform 0.5s ease, border-color 0.3s;
+    }
+    .feature-card.visible { opacity: 1; transform: translateY(0); }
+    .feature-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 1px;
+      background: linear-gradient(to right, transparent, var(--gold), transparent);
+      transform: scaleX(0); transition: transform 0.5s var(--ease);
+    }
+    .feature-card:hover { border-color: rgba(201,168,76,0.4); transform: translateY(-4px) !important; }
+    .feature-card:hover::before { transform: scaleX(1); }
+    .feature-icon { font-size: 1.75rem; margin-bottom: 1rem; display: block; }
+    .feature-title {
+      font-family: var(--font-display);
+      font-size: 0.75rem;
+      letter-spacing: 2px;
+      color: var(--gold);
+      text-transform: uppercase;
+      margin-bottom: 0.6rem;
+    }
+    .feature-desc {
+      font-family: var(--font-serif);
+      font-size: 0.98rem;
+      color: var(--white-60);
+      line-height: 1.7;
+    }
+    .feature-card.wide { grid-column: 1 / -1; }
+
+    /* Quote */
+    .quote-wrap {
+      position: relative; z-index: 1;
+      padding: 5rem 2rem;
+      text-align: center;
+      border-top: 1px solid var(--glass-border);
+      border-bottom: 1px solid var(--glass-border);
+      background: linear-gradient(180deg, transparent, rgba(201,168,76,0.03), transparent);
+    }
+    .quote-mark {
+      font-family: var(--font-serif);
+      font-size: 8rem;
+      color: rgba(201,168,76,0.06);
+      line-height: 0.5;
+      display: block;
+      margin-bottom: 1.5rem;
+    }
+    .big-quote {
+      font-family: var(--font-serif);
+      font-style: italic;
+      font-size: clamp(1.2rem, 3vw, 1.9rem);
+      color: var(--white-90);
+      line-height: 1.7;
+      max-width: 660px;
+      margin: 0 auto 1.5rem;
+    }
+    .big-quote span { color: var(--gold); }
+    .quote-attr {
+      font-family: var(--font-body);
+      font-size: 0.62rem;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--white-60);
+    }
+
+    /* Phases */
+    .phases-list {
+      display: flex; flex-direction: column;
+      position: relative; margin-top: 1rem;
+    }
+    .phases-list::before {
+      content: '';
+      position: absolute; left: 23px; top: 0; bottom: 0; width: 1px;
+      background: linear-gradient(to bottom, var(--gold-dim), transparent);
+    }
+    .phase-item {
+      display: flex; gap: 2rem; align-items: flex-start;
+      padding: 1.75rem 0;
+      opacity: 0; transform: translateX(-16px);
+      transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+    .phase-item.visible { opacity: 1; transform: translateX(0); }
+    .phase-num {
+      width: 46px; height: 46px; border-radius: 50%; flex-shrink: 0;
+      background: var(--navy-mid);
+      border: 1px solid var(--gold-dim);
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--font-display);
+      font-size: 0.72rem; color: var(--gold);
+      position: relative; z-index: 1;
+    }
+    .phase-title {
+      font-family: var(--font-display);
+      font-size: 0.8rem;
+      letter-spacing: 2px;
+      color: var(--gold);
+      text-transform: uppercase;
+      margin-bottom: 0.3rem;
+    }
+    .phase-desc {
+      font-family: var(--font-serif);
+      font-size: 1rem;
+      color: var(--white-60);
+      line-height: 1.7;
+    }
+
+    /* Bottom CTA */
+    .bottom-cta-wrap {
+      position: relative; z-index: 1;
+      text-align: center;
+      padding: 5rem 2rem 4rem;
+    }
+    .bottom-cta-pre {
+      font-family: var(--font-serif);
+      font-style: italic;
+      font-size: 1.1rem;
+      color: var(--white-60);
+      margin-bottom: 2rem;
+      line-height: 1.8;
+    }
+
+    /* Mobile */
+    @media (max-width: 600px) {
+      .form-screen-inner { padding: 2rem 1.25rem; }
+      .site-header { padding: 1rem 1.25rem; }
+      .brand-sub { display: none; }
+      .action-row { flex-direction: column; }
+      .btn-ghost { text-align: center; }
+      .features-grid { grid-template-columns: 1fr; }
+      .feature-card.wide { grid-column: 1; }
+      .welcome-section { padding: 4rem 1.25rem; }
+      .phases-list::before { display: none; }
+      .bottom-cta-wrap { padding: 3rem 1.25rem; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="blob blob-1"></div>
+<div class="blob blob-2"></div>
+
+<!-- ===== SCREEN 1: WELCOME ===== -->
+<div class="screen active" id="screen-welcome">
+  <header class="site-header">
+    <div class="brand">Memoir Deja Vu</div>
+    <div class="brand-sub">Graduation Experience Design</div>
+  </header>
+
+  <!-- Floating background quotes -->
+  <div class="floating-quotes" aria-hidden="true">
+    <div class="fq" style="top:15%; animation-duration:35s; animation-delay:0s;">"Four years. One story. Make sure it's never forgotten."</div>
+    <div class="fq" style="top:40%; animation-duration:42s; animation-delay:8s; opacity:0.6;">"Every name. Every memory. Forever preserved."</div>
+    <div class="fq" style="top:65%; animation-duration:38s; animation-delay:4s;">"The people who were there deserve to be remembered properly."</div>
+    <div class="fq" style="top:82%; animation-duration:45s; animation-delay:12s; opacity:0.5;">"Your class built something remarkable. Let Memoir preserve it."</div>
+  </div>
+
+  <!-- HERO -->
+  <div class="welcome-inner" style="position:relative; z-index:1; flex:1; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; padding:2rem; min-height:90vh;">
+    <div class="welcome-eyebrow">Memoir Deja Vu — Graduation Experience</div>
+    <h1 class="welcome-title">
+      Four years.<br>
+      One story.<br>
+      Make sure it's <em>never forgotten.</em>
+    </h1>
+    <div class="welcome-divider"></div>
+    <p class="welcome-sub">
+      Your class has built something remarkable.<br>
+      Let Memoir help you preserve it forever.
+    </p>
+    <a href="#what-inside" style="display:inline-flex; align-items:center; gap:0.5rem; font-family:var(--font-body); font-size:0.65rem; letter-spacing:3px; text-transform:uppercase; color:var(--white-60); text-decoration:none; margin-top:1rem; transition:color 0.3s;" onmouseover="this.style.color='var(--gold)'" onmouseout="this.style.color='var(--white-60)'">
+      See what's inside &nbsp;↓
+    </a>
+  </div>
+
+  <!-- WHAT'S INSIDE -->
+  <div id="what-inside" class="welcome-section">
+    <span class="section-eyebrow">What's Inside</span>
+    <h2 class="section-heading">Everything your class<br>story needs.</h2>
+    <div class="section-divider"></div>
+    <p class="section-intro">
+      This isn't a template. It's a hand-built, fully personalized digital home for your graduating class —
+      alive with every name, every memory, every feeling from your years together.
+    </p>
+
+    <div class="features-grid">
+      <div class="feature-card">
+        <span class="feature-icon">👑</span>
+        <div class="feature-title">Legacy Wall</div>
+        <div class="feature-desc">Every graduate. Their name, nickname, quote, best memory and future ambition — searchable, filterable, permanent.</div>
+      </div>
+      <div class="feature-card">
+        <span class="feature-icon">🏆</span>
+        <div class="feature-title">Live Class Awards</div>
+        <div class="feature-desc">Real voting. Real results. Most Likely to Succeed, Department Comedian, Silent Genius — voted on by the whole class in real time.</div>
+      </div>
+      <div class="feature-card">
+        <span class="feature-icon">🕊️</span>
+        <div class="feature-title">Confession Wall</div>
+        <div class="feature-desc">Anonymous messages — confessions, apologies, crushes, secrets. Curated and approved before they go live. No names. No drama.</div>
+      </div>
+      <div class="feature-card">
+        <span class="feature-icon">⏳</span>
+        <div class="feature-title">Time Capsule</div>
+        <div class="feature-desc">Every graduate writes a letter to their future self. Sealed digitally. Waiting. The site counts down to the day it opens.</div>
+      </div>
+      <div class="feature-card">
+        <span class="feature-icon">🎵</span>
+        <div class="feature-title">Class Soundtrack</div>
+        <div class="feature-desc">The songs that defined your years — playable right there on the site. Your anthems. Your era.</div>
+      </div>
+      <div class="feature-card">
+        <span class="feature-icon">📸</span>
+        <div class="feature-title">Gallery & Timeline</div>
+        <div class="feature-desc">Your best moments — dinner nights, exam season, first days — organized, captioned. A visual story of four years.</div>
+      </div>
+      <div class="feature-card wide">
+        <span class="feature-icon">🔍</span>
+        <div class="feature-title">Class Archive — A Dedicated Page</div>
+        <div class="feature-desc">A fully searchable, alphabetically filterable archive of every graduate. Click any name and their full profile slides open. On mobile it rises from the bottom. On desktop it glides in from the side. Every single person, remembered properly.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- THE BIG QUOTE -->
+  <div class="quote-wrap">
+    <span class="quote-mark">"</span>
+    <p class="big-quote">
+      Ten years from now, someone will open this site and
+      <span>feel everything all over again.</span>
+      Their quote will still be there. Their memory will still be there.
+      The confession that made them cry will still be there.
+    </p>
+    <div class="quote-attr">— Memoir Deja Vu</div>
+  </div>
+
+  <!-- HOW IT WORKS -->
+  <div class="welcome-section">
+    <span class="section-eyebrow">How It Works</span>
+    <h2 class="section-heading">Simple. Phased.<br>Done in days.</h2>
+    <div class="section-divider"></div>
+
+    <div class="phases-list">
+      <div class="phase-item">
+        <div class="phase-num">01</div>
+        <div>
+          <div class="phase-title">Department Commitment</div>
+          <div class="phase-desc">Fill the form on the next screen. Tell us your department, your class size, your contact. We reach out on WhatsApp within 24 hours and officially open your class portal.</div>
+        </div>
+      </div>
+      <div class="phase-item">
+        <div class="phase-num">02</div>
+        <div>
+          <div class="phase-title">Student Data Submission</div>
+          <div class="phase-desc">We send you a structured Google Sheet. Each graduate fills their name, nickname, quote, best memory and ambition. You collect it. We build from it.</div>
+        </div>
+      </div>
+      <div class="phase-item">
+        <div class="phase-num">03</div>
+        <div>
+          <div class="phase-title">Media & Content Upload</div>
+          <div class="phase-desc">Photos, music, lecturer details — all submitted through a shared Google Drive folder we set up for you. Organized, simple, no confusion.</div>
+        </div>
+      </div>
+      <div class="phase-item">
+        <div class="phase-num">04</div>
+        <div>
+          <div class="phase-title">Launch</div>
+          <div class="phase-desc">Your class legacy goes live. A private link sent to every graduate. Your story, permanently online. Your class, forever remembered.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BOTTOM CTA -->
+  <div class="bottom-cta-wrap">
+    <p class="bottom-cta-pre">
+      If your class is serious about being remembered —<br>
+      this is where you begin.
+    </p>
+    <button class="welcome-cta" onclick="goTo('screen-rep')">
+      Start Your Class Experience &nbsp;→
+    </button>
+  </div>
+
+  <footer class="site-footer">
+    <div class="footer-brand">Memoir Deja Vu</div>
+    <div class="footer-text">Powered by Memoir Deja Vu</div>
+  </footer>
+</div>
+
+<!-- ===== SCREEN 2: REP INFO ===== -->
+<div class="screen" id="screen-rep">
+  <header class="site-header">
+    <div class="brand">Memoir Deja Vu</div>
+    <div class="brand-sub">Step 1 of 3</div>
+  </header>
+
+  <div class="form-screen-inner">
+    <div class="progress-bar-wrap">
+      <div class="progress-bar-fill" style="width:33%"></div>
+    </div>
+
+    <div class="screen-label">Your Details</div>
+    <h2 class="screen-title">Tell us about<br>your class.</h2>
+    <p class="screen-sub">We'll reach out on WhatsApp within 24 hours to begin building your experience.</p>
+
+    <div class="fields">
+      <div class="field">
+        <label>Your Full Name</label>
+        <input type="text" id="repName" placeholder="e.g. Adaeze Okonkwo" autocomplete="name" />
+      </div>
+      <div class="field">
+        <label>Where are you graduating from?</label>
+        <input type="text" id="repUniversity" placeholder="e.g. University of Lagos" />
+      </div>
+      <div class="field">
+        <label>Your Department</label>
+        <input type="text" id="repDept" placeholder="e.g. Department of Educational Management" />
+      </div>
+      <div class="field">
+        <label>Expected Graduation</label>
+        <input type="text" id="repGradDate" placeholder="e.g. November 2026" />
+      </div>
+      <div class="field">
+        <label>WhatsApp Number</label>
+        <input type="tel" id="repPhone" placeholder="e.g. +234 801 234 5678" autocomplete="tel" />
+      </div>
+      <div class="field">
+        <label>Email Address</label>
+        <input type="email" id="repEmail" placeholder="e.g. adaeze@email.com" autocomplete="email" />
+      </div>
+    </div>
+
+    <div class="action-row">
+      <button class="btn-ghost" onclick="goTo('screen-welcome')">← Back</button>
+      <button class="btn-primary" onclick="submitRepForm()">Continue →</button>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <div class="footer-text">Powered by <span class="footer-brand">Memoir Deja Vu</span></div>
+  </footer>
+</div>
+
+<!-- ===== SCREEN 3: PRICE CALCULATOR ===== -->
+<div class="screen" id="screen-price">
+  <header class="site-header">
+    <div class="brand">Memoir Deja Vu</div>
+    <div class="brand-sub">Step 2 of 3</div>
+  </header>
+
+  <div class="form-screen-inner">
+    <div class="progress-bar-wrap">
+      <div class="progress-bar-fill" style="width:66%"></div>
+    </div>
+
+    <div class="screen-label">Investment</div>
+    <h2 class="screen-title">How many students<br>are graduating?</h2>
+    <p class="screen-sub">Type the number and watch your class investment calculate in real time.</p>
+
+    <div class="price-input-wrap">
+      <input
+        type="number"
+        id="studentCount"
+        placeholder="e.g. 150"
+        min="1"
+        oninput="calculatePrice()"
+      />
+      <div class="price-input-hint">graduates in your department</div>
+    </div>
+
+    <div class="price-display" id="priceDisplay">
+      <div class="price-equation" id="priceEquation">— × ₦3,000 = —</div>
+      <div class="price-total" id="priceTotal">₦0</div>
+      <div class="price-reframe" id="priceReframe">
+        That's just <span>₦3,000 per student</span> — less than the cost of a meal,
+        for something they'll carry for the rest of their lives.
+      </div>
+    </div>
+
+    <div class="action-row">
+      <button class="btn-ghost" onclick="goTo('screen-rep')">← Back</button>
+      <button class="btn-primary" id="priceNextBtn" onclick="submitPriceStep()" disabled>
+        Share With My Class →
+      </button>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <div class="footer-text">Powered by <span class="footer-brand">Memoir Deja Vu</span></div>
+  </footer>
+</div>
+
+<!-- ===== SCREEN 4: CONFIRMATION + SHARE ===== -->
+<div class="screen" id="screen-confirm">
+  <header class="site-header">
+    <div class="brand">Memoir Deja Vu</div>
+    <div class="brand-sub">Your Experience Has Begun</div>
+  </header>
+
+  <div class="form-screen-inner">
+    <div class="confirm-seal">🏛️</div>
+    <div class="confirm-title">Your Experience Is Being Prepared.</div>
+    <div class="confirm-dept" id="confirmDept"></div>
+    <p class="confirm-message">
+      Share the link below with your classmates so they can be part of building it.
+      Our team will reach out to you within 24 hours.
+    </p>
+
+    <div class="share-box">
+      <span class="share-box-label">Share This With Your Class</span>
+      <div class="share-link-text" id="shareLink">Loading your link...</div>
+      <button class="copy-btn" id="copyBtn" onclick="copyLink()">Copy Link</button>
+    </div>
+
+    <a class="whatsapp-btn" id="whatsappShareBtn" href="#" target="_blank">
+      📲 &nbsp; Share on WhatsApp
+    </a>
+
+    <p style="font-family:var(--font-serif); font-style:italic; font-size:0.85rem; color:var(--white-60); line-height:1.7; max-width:380px;">
+      Once your classmates open the link, they can submit their favourite memory
+      from your time together — before a single naira is paid.
+    </p>
+  </div>
+
+  <footer class="site-footer">
+    <div class="footer-text">Powered by <span class="footer-brand">Memoir Deja Vu</span></div>
+  </footer>
+</div>
+
+<script>
+/* ===== SUPABASE ===== */
+const SB_URL  = 'https://hwswintesajjitlmepnt.supabase.co';
+const SB_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh3c3dpbnRlc2Fqaml0bG1lcG50Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE4NDkwMzQsImV4cCI6MjA4NzQyNTAzNH0.jl8cNK6GCqboXwhPHLmlLO0_Fj-kBbEnKLtwgd7R-K0';
+
+async function sbInsert(table, data) {
+  try {
+    const res = await fetch(`${SB_URL}/rest/v1/${table}`, {
+      method: 'POST',
+      headers: {
+        'apikey': SB_ANON,
+        'Authorization': `Bearer ${SB_ANON}`,
+        'Content-Type': 'application/json',
+        'Prefer': 'return=representation'
+      },
+      body: JSON.stringify(data)
+    });
+    return await res.json();
+  } catch(e) {
+    console.error('Supabase insert error:', e);
+    return null;
+  }
+}
+
+/* ===== WHATSAPP NOTIFICATION ===== */
+async function notifyWhatsApp(message) {
+  const phone   = '2349110154056';
+  const encoded = encodeURIComponent(message);
+  // Opens WhatsApp with pre-filled message for the founder
+  // In production you'd use a WhatsApp API like Twilio or WatiApp
+  // For now this stores the intent and the founder can check Supabase
+  console.log('WhatsApp notification:', message);
+}
+
+/* ===== STATE ===== */
+let repData     = {};
+let studentCount = 0;
+let repId       = null;
+
+/* ===== SCROLL REVEAL ===== */
+const revealObs = new IntersectionObserver((entries) => {
+  entries.forEach((e, i) => {
+    if (e.isIntersecting) {
+      setTimeout(() => e.target.classList.add('visible'), i * 80);
+      revealObs.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.12 });
+
+document.querySelectorAll('.feature-card, .phase-item').forEach(el => revealObs.observe(el));
+
+/* ===== NAVIGATION ===== */
+function goTo(screenId) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(screenId).classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+/* ===== STEP 1 — REP FORM ===== */
+async function submitRepForm() {
+  const name     = document.getElementById('repName').value.trim();
+  const uni      = document.getElementById('repUniversity').value.trim();
+  const dept     = document.getElementById('repDept').value.trim();
+  const grad     = document.getElementById('repGradDate').value.trim();
+  const phone    = document.getElementById('repPhone').value.trim();
+  const email    = document.getElementById('repEmail').value.trim();
+
+  // Validate
+  const fields = [
+    { id: 'repName',       val: name },
+    { id: 'repUniversity', val: uni  },
+    { id: 'repDept',       val: dept },
+    { id: 'repGradDate',   val: grad },
+    { id: 'repPhone',      val: phone},
+    { id: 'repEmail',      val: email},
+  ];
+  let valid = true;
+  fields.forEach(f => {
+    const el = document.getElementById(f.id);
+    el.classList.remove('error');
+    if (!f.val) { el.classList.add('error'); valid = false; }
+  });
+  if (!valid) return;
+
+  // Save to Supabase
+  repData = { name, uni, dept, grad, phone, email };
+  const result = await sbInsert('leads', {
+    rep_name:     name,
+    rep_role:     'Class Representative',
+    rep_whatsapp: phone,
+    rep_email:    email,
+    school_name:  uni,
+    dept_name:    dept,
+    grad_year:    grad,
+    intent:       'submitted'
+  });
+
+  if (result && result.length > 0) {
+    repId = result[0].id;
+  }
+
+  // Notify via WhatsApp text prep
+  notifyWhatsApp(
+    `🎓 New Memoir Lead!\n\nName: ${name}\nDept: ${dept}\nUni: ${uni}\nGrad: ${grad}\nPhone: ${phone}\nEmail: ${email}`
+  );
+
+  goTo('screen-price');
+}
+
+/* ===== STEP 2 — PRICE CALCULATOR ===== */
+function calculatePrice() {
+  const input   = document.getElementById('studentCount');
+  const count   = parseInt(input.value) || 0;
+  studentCount  = count;
+  const display = document.getElementById('priceDisplay');
+  const nextBtn = document.getElementById('priceNextBtn');
+
+  if (count < 1) {
+    display.classList.remove('visible');
+    nextBtn.disabled = true;
+    return;
+  }
+
+  const total = count * 3000;
+  const formatted = '₦' + total.toLocaleString('en-NG');
+
+  document.getElementById('priceEquation').textContent =
+    `${count.toLocaleString()} graduates × ₦3,000`;
+  document.getElementById('priceTotal').textContent    = formatted;
+  document.getElementById('priceTotal').style.animation = 'none';
+  requestAnimationFrame(() => {
+    document.getElementById('priceTotal').style.animation = 'countUp 0.3s var(--ease)';
+  });
+
+  display.classList.add('visible');
+  nextBtn.disabled = false;
+}
+
+async function submitPriceStep() {
+  // Update lead with student count
+  if (repId) {
+    await fetch(`${SB_URL}/rest/v1/leads?id=eq.${repId}`, {
+      method: 'PATCH',
+      headers: {
+        'apikey': SB_ANON,
+        'Authorization': `Bearer ${SB_ANON}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ student_count: studentCount })
+    });
+  }
+
+  // Generate classmate link
+  const deptSlug = repData.dept
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)/g, '');
+  const gradSlug = repData.grad
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-');
+  const token    = `${deptSlug}-${gradSlug}-${repId || Date.now()}`;
+
+  // Store token in localStorage for classmate page
+  localStorage.setItem('memoir_token',   token);
+  localStorage.setItem('memoir_dept',    repData.dept);
+  localStorage.setItem('memoir_uni',     repData.uni);
+  localStorage.setItem('memoir_grad',    repData.grad);
+  localStorage.setItem('memoir_lead_id', repId || '');
+
+  // Build classmate URL
+  const baseUrl      = window.location.href.replace(/[^/]*$/, '');
+  const classmateUrl = `${baseUrl}classmates.html?token=${token}&dept=${encodeURIComponent(repData.dept)}&uni=${encodeURIComponent(repData.uni)}&grad=${encodeURIComponent(repData.grad)}`;
+
+  // Update confirm screen
+  document.getElementById('confirmDept').textContent =
+    `${repData.dept} — ${repData.grad}`;
+  document.getElementById('shareLink').textContent = classmateUrl;
+
+  // WhatsApp share link
+  const waMessage = `Hey everyone 👋\n\nWe're building something special for our class — a permanent digital legacy of our time together.\n\nClick the link below to submit your favourite memory from our years in ${repData.dept}. It takes 1 minute and it will live inside our class experience forever.\n\n${classmateUrl}\n\n— ${repData.name}`;
+  document.getElementById('whatsappShareBtn').href =
+    `https://wa.me/?text=${encodeURIComponent(waMessage)}`;
+
+  // Copy button setup
+  window._classmateUrl = classmateUrl;
+
+  goTo('screen-confirm');
+}
+
+function copyLink() {
+  navigator.clipboard.writeText(window._classmateUrl || '').then(() => {
+    const btn = document.getElementById('copyBtn');
+    btn.textContent = '✓ Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => {
+      btn.textContent = 'Copy Link';
+      btn.classList.remove('copied');
+    }, 2500);
+  });
+}
+
+/* Remove error styling on input */
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('input').forEach(el => {
+    el.addEventListener('input', () => el.classList.remove('error'));
+  });
+});
+</script>
+
+</body>
+</html>
