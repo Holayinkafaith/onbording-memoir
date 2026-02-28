@@ -3,12 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Memoir Deja Vu — Submit Your Memory</title>
+  <title>Memoir Deja Vu — Your Class Is Building Something</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600&family=Cinzel:wght@400;600;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
   <style>
-    /* ===== VARIABLES — landing.html ===== */
     :root {
       --navy:        #070f1e;
       --navy-mid:    #0c1a35;
@@ -39,7 +38,6 @@
       line-height: 1.7;
       overflow-x: hidden;
       min-height: 100vh;
-      display: flex; flex-direction: column;
       opacity: 0;
       animation: pageIn 0.8s var(--ease) 0.1s forwards;
     }
@@ -71,6 +69,19 @@
     @keyframes drift2 { from { transform: translate(0,0); } to { transform: translate(80px,-60px); } }
     @keyframes fadeUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
 
+    /* ===== SCREEN SYSTEM ===== */
+    .screen {
+      display: none;
+      min-height: 100vh;
+      position: relative; z-index: 1;
+      animation: screenIn 0.6s var(--ease) forwards;
+    }
+    .screen.active { display: flex; flex-direction: column; }
+    @keyframes screenIn {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
     /* ===== HEADER ===== */
     .site-header {
       padding: 1.25rem 2rem;
@@ -78,54 +89,100 @@
       background: linear-gradient(to bottom, rgba(7,15,30,0.98) 0%, rgba(7,15,30,0.95) 100%);
       backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--glass-border);
-      position: sticky; top: 0; z-index: 100; flex-shrink: 0;
+      flex-shrink: 0; position: relative; z-index: 10;
     }
     .brand { font-family: var(--font-display); font-size: 0.75rem; letter-spacing: 4px; color: var(--gold); text-transform: uppercase; }
     .brand-sub { font-family: var(--font-serif); font-style: italic; font-size: 0.8rem; color: var(--white-60); }
 
-    .container { max-width: 780px; margin: 0 auto; padding: 0 2rem; position: relative; z-index: 1; }
-
-    /* ===== HERO ===== */
-    .cm-hero {
-      min-height: 80vh; display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      text-align: center; padding: 6rem 2rem 5rem;
+    /* ===== SHARED INNER LAYOUT ===== */
+    .screen-inner {
+      flex: 1; display: flex; flex-direction: column;
+      justify-content: center; align-items: center;
+      text-align: center; padding: 5rem 2rem 4rem;
       position: relative; z-index: 1;
+      max-width: 860px; margin: 0 auto; width: 100%;
     }
-    .cm-hero::before, .cm-hero::after {
-      content: ''; position: absolute; left: 50%; transform: translateX(-50%);
-      width: 1px; background: linear-gradient(to bottom, transparent, var(--gold-dim), transparent);
-    }
-    .cm-hero::before { top: 0; height: 80px; }
-    .cm-hero::after  { bottom: 0; height: 80px; }
 
+    /* Decorative vertical line */
+    .screen-inner::before {
+      content: '';
+      position: absolute; left: 50%; transform: translateX(-50%);
+      width: 1px; top: 0; height: 80px;
+      background: linear-gradient(to bottom, transparent, var(--gold-dim), transparent);
+    }
+
+    /* ===== DEPT BANNER ===== */
     .dept-banner {
       display: inline-flex; align-items: center; gap: 0.75rem;
       background: var(--glass); border: 1px solid var(--glass-border);
       border-radius: 30px; padding: 0.5rem 1.25rem; margin-bottom: 2.5rem;
       opacity: 0; animation: fadeUp 0.8s var(--ease) 0.2s forwards;
     }
-    .dept-icon { font-size: 1rem; }
     .dept-name { font-family: var(--font-display); font-size: 0.65rem; letter-spacing: 2px; color: var(--gold); text-transform: uppercase; }
-    .dept-sep { color: var(--glass-border); }
+    .dept-sep  { color: var(--glass-border); }
     .dept-school { font-family: var(--font-serif); font-style: italic; font-size: 0.85rem; color: var(--white-60); }
 
-    .hero-eyebrow { font-family: var(--font-body); font-size: 0.65rem; letter-spacing: 6px; text-transform: uppercase; color: var(--gold); margin-bottom: 1.5rem; opacity: 0; animation: fadeUp 0.8s var(--ease) 0.3s forwards; }
-    .hero-title { font-family: var(--font-display); font-size: clamp(2rem, 6vw, 4rem); line-height: 1.1; letter-spacing: 2px; color: var(--white); margin-bottom: 1.5rem; opacity: 0; animation: fadeUp 0.9s var(--ease) 0.5s forwards; }
+    /* ===== HERO TYPOGRAPHY ===== */
+    .hero-eyebrow {
+      font-family: var(--font-body); font-size: 0.65rem; letter-spacing: 6px;
+      text-transform: uppercase; color: var(--gold); margin-bottom: 1.5rem;
+      opacity: 0; animation: fadeUp 0.8s var(--ease) 0.3s forwards;
+    }
+    .hero-title {
+      font-family: var(--font-display); font-size: clamp(2rem, 6vw, 4rem);
+      line-height: 1.1; letter-spacing: 2px; color: var(--white); margin-bottom: 1.5rem;
+      opacity: 0; animation: fadeUp 0.9s var(--ease) 0.5s forwards;
+    }
     .hero-title em { font-style: italic; color: var(--gold); font-family: var(--font-serif); font-weight: 300; }
-    .hero-divider { width: 60px; height: 1px; background: linear-gradient(to right, transparent, var(--gold), transparent); margin: 0 auto 2rem; opacity: 0; animation: fadeUp 0.8s var(--ease) 0.6s forwards; }
-    .hero-sub { font-family: var(--font-serif); font-style: italic; font-size: clamp(1rem, 2.5vw, 1.3rem); color: var(--white-60); line-height: 1.9; max-width: 520px; margin: 0 auto 3rem; opacity: 0; animation: fadeUp 1s var(--ease) 0.7s forwards; }
-    .hero-scroll-cta { display: inline-flex; align-items: center; gap: 0.5rem; font-family: var(--font-body); font-size: 0.65rem; letter-spacing: 3px; text-transform: uppercase; color: var(--white-60); text-decoration: none; transition: color 0.3s; opacity: 0; animation: fadeUp 1s var(--ease) 0.9s forwards; }
-    .hero-scroll-cta:hover { color: var(--gold); }
+    .hero-divider {
+      width: 60px; height: 1px;
+      background: linear-gradient(to right, transparent, var(--gold), transparent);
+      margin: 0 auto 2rem;
+      opacity: 0; animation: fadeUp 0.8s var(--ease) 0.6s forwards;
+    }
+    .hero-sub {
+      font-family: var(--font-serif); font-style: italic;
+      font-size: clamp(1rem, 2.5vw, 1.35rem); color: var(--white-60);
+      line-height: 1.9; max-width: 560px; margin: 0 auto 3rem;
+      opacity: 0; animation: fadeUp 1s var(--ease) 0.7s forwards;
+    }
+    .btn-next {
+      display: inline-flex; align-items: center; gap: 0.75rem;
+      padding: 1.1rem 3rem;
+      background: linear-gradient(135deg, var(--gold-dim), var(--gold));
+      color: var(--navy); font-family: var(--font-display);
+      font-size: 0.75rem; letter-spacing: 3px; text-transform: uppercase; font-weight: 700;
+      border: none; border-radius: 4px; cursor: pointer;
+      transition: all 0.4s var(--ease); position: relative; overflow: hidden;
+      opacity: 0; animation: fadeUp 1s var(--ease) 0.9s forwards;
+    }
+    .btn-next::after {
+      content: ''; position: absolute; inset: 0;
+      background: rgba(255,255,255,0.15);
+      transform: scaleX(0); transform-origin: left; transition: transform 0.4s var(--ease);
+    }
+    .btn-next:hover { transform: translateY(-3px); box-shadow: 0 20px 50px rgba(201,168,76,0.3); }
+    .btn-next:hover::after { transform: scaleX(1); }
 
-    /* ===== FEATURES ===== */
-    .features { padding: 8rem 0; position: relative; z-index: 1; }
+    /* ===== SCREEN 2: WHAT'S INSIDE ===== */
+    .content-wrap {
+      flex: 1; position: relative; z-index: 1;
+      max-width: 860px; margin: 0 auto; padding: 4rem 2rem;
+      width: 100%;
+    }
     .section-label { font-family: var(--font-body); font-size: 0.62rem; letter-spacing: 5px; text-transform: uppercase; color: var(--gold); display: block; margin-bottom: 1rem; }
     .section-title { font-family: var(--font-display); font-size: clamp(1.8rem, 4vw, 2.8rem); color: var(--white); letter-spacing: 1px; margin-bottom: 1rem; line-height: 1.2; }
     .section-divider { width: 50px; height: 1px; background: linear-gradient(to right, var(--gold), transparent); margin-bottom: 3rem; }
     .features-intro { font-family: var(--font-serif); font-style: italic; font-size: 1.1rem; color: var(--white-60); line-height: 1.9; margin-bottom: 3rem; max-width: 600px; }
-    .features-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.25rem; }
-    .feature-card { background: var(--glass); border: 1px solid var(--glass-border); border-radius: 10px; padding: 1.75rem 1.5rem; position: relative; overflow: hidden; opacity: 0; transform: translateY(20px); transition: opacity 0.5s ease, transform 0.5s ease, border-color 0.3s; }
+
+    .features-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.25rem; margin-bottom: 5rem; }
+    .feature-card {
+      background: var(--glass); border: 1px solid var(--glass-border);
+      border-radius: 10px; padding: 1.75rem 1.5rem;
+      position: relative; overflow: hidden;
+      opacity: 0; transform: translateY(20px);
+      transition: opacity 0.5s ease, transform 0.5s ease, border-color 0.3s;
+    }
     .feature-card.visible { opacity: 1; transform: translateY(0); }
     .feature-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(to right, transparent, var(--gold), transparent); transform: scaleX(0); transition: transform 0.5s var(--ease); }
     .feature-card:hover { border-color: rgba(201,168,76,0.4); transform: translateY(-4px) !important; box-shadow: 0 20px 50px rgba(0,0,0,0.3); }
@@ -135,38 +192,87 @@
     .feature-title { font-family: var(--font-display); font-size: 0.8rem; letter-spacing: 2px; color: var(--gold); text-transform: uppercase; margin-bottom: 0.6rem; }
     .feature-desc { font-family: var(--font-serif); font-size: 0.98rem; color: var(--white-60); line-height: 1.7; }
 
-    /* ===== QUOTE ===== */
-    .quote-section { padding: 6rem 0; position: relative; z-index: 1; text-align: center; }
-    .quote-section::before { content: '"'; position: absolute; top: 2rem; left: 50%; transform: translateX(-50%); font-family: var(--font-serif); font-size: 12rem; color: rgba(201,168,76,0.05); line-height: 1; pointer-events: none; }
-    .big-quote { font-family: var(--font-serif); font-style: italic; font-size: clamp(1.4rem, 3.5vw, 2.2rem); color: var(--white-90); line-height: 1.6; max-width: 680px; margin: 0 auto 2rem; position: relative; z-index: 1; }
+    /* Big quote */
+    .quote-block {
+      text-align: center;
+      border-top: 1px solid var(--glass-border);
+      border-bottom: 1px solid var(--glass-border);
+      padding: 4rem 2rem;
+      margin-bottom: 3rem;
+      position: relative;
+      background: linear-gradient(180deg, transparent, rgba(201,168,76,0.02), transparent);
+    }
+    .quote-block::before {
+      content: '"'; position: absolute; top: 1.5rem; left: 50%; transform: translateX(-50%);
+      font-family: var(--font-serif); font-size: 10rem;
+      color: rgba(201,168,76,0.05); line-height: 1; pointer-events: none;
+    }
+    .big-quote { font-family: var(--font-serif); font-style: italic; font-size: clamp(1.3rem, 3vw, 2rem); color: var(--white-90); line-height: 1.7; max-width: 660px; margin: 0 auto 1.5rem; position: relative; z-index: 1; }
     .big-quote span { color: var(--gold); }
-    .quote-attr { font-size: 0.65rem; letter-spacing: 3px; text-transform: uppercase; color: var(--white-60); }
+    .quote-attr { font-size: 0.62rem; letter-spacing: 3px; text-transform: uppercase; color: var(--white-60); }
 
-    /* ===== PHASES ===== */
-    .phases { padding: 6rem 0; position: relative; z-index: 1; }
-    .phases-list { display: flex; flex-direction: column; margin-top: 3rem; position: relative; }
-    .phases-list::before { content: ''; position: absolute; left: 24px; top: 0; bottom: 0; width: 1px; background: linear-gradient(to bottom, var(--gold-dim), transparent); }
-    .phase-item { display: flex; gap: 2rem; align-items: flex-start; padding: 2rem 0; opacity: 0; transform: translateX(-20px); transition: opacity 0.5s ease, transform 0.5s ease; }
-    .phase-item.visible { opacity: 1; transform: translateX(0); }
-    .phase-number { width: 48px; height: 48px; border-radius: 50%; flex-shrink: 0; background: var(--navy-mid); border: 1px solid var(--gold-dim); display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: 0.75rem; color: var(--gold); position: relative; z-index: 1; }
-    .phase-content { flex: 1; }
-    .phase-title { font-family: var(--font-display); font-size: 0.85rem; letter-spacing: 2px; color: var(--gold); text-transform: uppercase; margin-bottom: 0.4rem; }
-    .phase-desc { font-family: var(--font-serif); font-size: 1rem; color: var(--white-60); line-height: 1.7; }
+    .s2-cta-wrap {
+      display: flex; justify-content: center; padding-bottom: 2rem;
+    }
 
-    /* ===== FORM SECTION ===== */
-    .form-section { padding: 4rem 0 8rem; position: relative; z-index: 1; }
-    .form-wrap { background: linear-gradient(135deg, var(--navy-mid) 0%, var(--navy-light) 100%); border: 1px solid var(--glass-border); border-radius: 16px; padding: 3rem 2.5rem; position: relative; overflow: hidden; }
-    .form-wrap::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(to right, transparent, var(--gold), transparent); }
+    /* ===== SCREEN 3: FORM ===== */
+    .form-outer {
+      flex: 1; display: flex; flex-direction: column;
+      justify-content: center; align-items: center;
+      position: relative; z-index: 1;
+      padding: 4rem 2rem 5rem;
+    }
 
-    .form-dept-tag { display: inline-flex; align-items: center; gap: 0.6rem; background: var(--gold-glow); border: 1px solid var(--glass-border); border-radius: 6px; padding: 0.5rem 1rem; margin-bottom: 2rem; }
-    .form-dept-tag span { font-family: var(--font-display); font-size: 0.65rem; letter-spacing: 2px; color: var(--gold); text-transform: uppercase; }
-    .form-title { font-family: var(--font-display); font-size: clamp(1.3rem, 3vw, 1.8rem); color: var(--gold); letter-spacing: 2px; margin-bottom: 0.5rem; }
-    .form-sub { font-family: var(--font-serif); font-style: italic; font-size: 1rem; color: var(--white-60); line-height: 1.8; margin-bottom: 2.5rem; }
+    .form-wrap {
+      background: linear-gradient(135deg, var(--navy-mid) 0%, var(--navy-light) 100%);
+      border: 1px solid var(--glass-border);
+      border-radius: 16px; padding: 3rem 2.5rem;
+      position: relative; overflow: hidden;
+      width: 100%; max-width: 580px;
+    }
+    .form-wrap::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(to right, transparent, var(--gold), transparent);
+    }
+
+    /* "Somewhere between..." opening quote on form screen */
+    .form-opening {
+      font-family: var(--font-serif); font-style: italic;
+      font-size: clamp(1.1rem, 2.5vw, 1.4rem);
+      color: var(--white-90); line-height: 1.8;
+      margin-bottom: 0.5rem;
+      text-align: center;
+    }
+    .form-opening-attr {
+      font-family: var(--font-body); font-size: 0.6rem;
+      letter-spacing: 3px; text-transform: uppercase; color: var(--white-60);
+      text-align: center; margin-bottom: 2.5rem;
+      padding-bottom: 2.5rem;
+      border-bottom: 1px solid var(--glass-border);
+    }
+
+    .form-prompt {
+      font-family: var(--font-display); font-size: clamp(1rem, 2.5vw, 1.3rem);
+      color: var(--gold); letter-spacing: 1px; line-height: 1.4;
+      margin-bottom: 0.5rem;
+    }
+    .form-prompt-sub {
+      font-family: var(--font-serif); font-style: italic;
+      font-size: 0.95rem; color: var(--white-60); line-height: 1.7;
+      margin-bottom: 2.5rem;
+    }
 
     .fields { display: flex; flex-direction: column; gap: 1.1rem; }
     .field  { display: flex; flex-direction: column; gap: 0.4rem; }
     .field label { font-family: var(--font-body); font-size: 0.65rem; letter-spacing: 2.5px; text-transform: uppercase; color: var(--gold); }
-    .field input, .field select, .field textarea { background: rgba(255,255,255,0.04); border: 1px solid var(--glass-border); color: var(--white); font-family: var(--font-body); font-size: 0.95rem; padding: 0.85rem 1rem; border-radius: 8px; outline: none; transition: border-color 0.3s, background 0.3s; width: 100%; -webkit-appearance: none; }
+    .field input, .field select, .field textarea {
+      background: rgba(255,255,255,0.04); border: 1px solid var(--glass-border);
+      color: var(--white); font-family: var(--font-body);
+      font-size: 0.95rem; padding: 0.85rem 1rem;
+      border-radius: 8px; outline: none;
+      transition: border-color 0.3s, background 0.3s;
+      width: 100%; -webkit-appearance: none;
+    }
     .field input:focus, .field select:focus, .field textarea:focus { border-color: var(--gold); background: rgba(201,168,76,0.04); }
     .field input::placeholder, .field textarea::placeholder { color: rgba(255,255,255,0.3); font-style: italic; }
     .field input.error, .field textarea.error, .field select.error { border-color: var(--red); }
@@ -174,36 +280,77 @@
     .field textarea { resize: none; min-height: 130px; font-family: var(--font-serif); font-size: 1.05rem; line-height: 1.7; }
     .char-count { font-size: 0.62rem; color: var(--white-60); text-align: right; margin-top: 0.25rem; }
 
-    .btn-primary { width: 100%; padding: 1rem; background: linear-gradient(135deg, var(--gold-dim), var(--gold)); color: var(--navy); font-family: var(--font-display); font-size: 0.72rem; letter-spacing: 3px; text-transform: uppercase; font-weight: 700; border: none; border-radius: 8px; cursor: pointer; transition: all 0.4s var(--ease); margin-top: 1.75rem; min-height: 54px; position: relative; overflow: hidden; }
+    /* "This is just the beginning" line above the button */
+    .form-footer-note {
+      font-family: var(--font-serif); font-style: italic;
+      font-size: 1rem; color: var(--white-60); line-height: 1.7;
+      text-align: center; margin-top: 2rem; margin-bottom: 0;
+    }
+
+    .btn-primary {
+      width: 100%; padding: 1rem;
+      background: linear-gradient(135deg, var(--gold-dim), var(--gold));
+      color: var(--navy); font-family: var(--font-display);
+      font-size: 0.72rem; letter-spacing: 3px; text-transform: uppercase; font-weight: 700;
+      border: none; border-radius: 8px; cursor: pointer;
+      transition: all 0.4s var(--ease); margin-top: 1.25rem;
+      min-height: 54px; position: relative; overflow: hidden;
+    }
     .btn-primary::after { content: ''; position: absolute; inset: 0; background: rgba(255,255,255,0.15); transform: scaleX(0); transform-origin: left; transition: transform 0.4s var(--ease); }
     .btn-primary:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 15px 40px rgba(201,168,76,0.3); }
     .btn-primary:hover:not(:disabled)::after { transform: scaleX(1); }
     .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
 
-    /* ===== SUCCESS ===== */
-    .success-state { display: none; text-align: center; padding: 3rem 0; animation: fadeUp 0.6s var(--ease) forwards; }
-    .success-icon { font-size: 3.5rem; margin-bottom: 1.5rem; display: block; animation: floatUp 3s ease-in-out infinite; }
-    @keyframes floatUp { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
-    .success-title { font-family: var(--font-display); font-size: clamp(1.2rem, 3vw, 1.6rem); color: var(--gold); letter-spacing: 2px; margin-bottom: 1rem; }
-    .success-message { font-family: var(--font-serif); font-style: italic; font-size: 1.1rem; color: var(--white-60); line-height: 1.8; max-width: 420px; margin: 0 auto; }
+    /* ===== SCREEN 4: SUCCESS ===== */
+    .success-inner {
+      flex: 1; display: flex; flex-direction: column;
+      justify-content: center; align-items: center;
+      text-align: center; padding: 6rem 2rem;
+      position: relative; z-index: 1;
+    }
+    .success-seal {
+      width: 100px; height: 100px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--gold-dim), var(--gold));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2.5rem; margin: 0 auto 2.5rem;
+      box-shadow: 0 0 80px rgba(201,168,76,0.3);
+      animation: sealPulse 3s ease-in-out infinite;
+    }
+    @keyframes sealPulse {
+      0%,100% { box-shadow: 0 0 40px rgba(201,168,76,0.2); }
+      50%      { box-shadow: 0 0 100px rgba(201,168,76,0.45); }
+    }
+    .success-title {
+      font-family: var(--font-display);
+      font-size: clamp(1.4rem, 4vw, 2.2rem);
+      color: var(--white); letter-spacing: 2px; line-height: 1.2;
+      margin-bottom: 1.25rem; max-width: 560px;
+    }
+    .success-sub {
+      font-family: var(--font-serif); font-style: italic;
+      font-size: clamp(1rem, 2.5vw, 1.4rem);
+      color: var(--gold); line-height: 1.7;
+      max-width: 480px;
+    }
 
     /* ===== FOOTER ===== */
-    .site-footer { padding: 1.5rem 2rem; text-align: center; border-top: 1px solid var(--glass-border); position: relative; z-index: 1; flex-shrink: 0; margin-top: auto; }
+    .site-footer {
+      padding: 1.5rem 2rem; text-align: center;
+      border-top: 1px solid var(--glass-border);
+      position: relative; z-index: 1; flex-shrink: 0;
+    }
     .footer-brand { font-family: var(--font-display); font-size: 0.65rem; letter-spacing: 3px; color: var(--gold); display: block; margin-bottom: 0.3rem; }
     .footer-text { font-family: var(--font-serif); font-style: italic; font-size: 0.8rem; color: var(--white-60); }
 
     @media (max-width: 600px) {
-      .container { padding: 0 1.25rem; }
       .site-header { padding: 1rem 1.25rem; }
       .brand-sub { display: none; }
-      .features { padding: 5rem 0; }
+      .content-wrap { padding: 3rem 1.25rem; }
       .features-grid { grid-template-columns: 1fr; }
       .feature-card.wide { grid-column: 1; }
-      .phases-list::before { display: none; }
+      .form-outer { padding: 3rem 1.25rem 4rem; }
       .form-wrap { padding: 2rem 1.25rem; }
-      .quote-section, .phases { padding: 4rem 0; }
-      .form-section { padding: 3rem 0 5rem; }
-      .dept-banner { flex-wrap: wrap; justify-content: center; text-align: center; border-radius: 12px; }
+      .screen-inner { padding: 4rem 1.25rem 3rem; }
     }
   </style>
 </head>
@@ -212,35 +359,56 @@
 <div class="ambient ambient-1"></div>
 <div class="ambient ambient-2"></div>
 
-<header class="site-header">
-  <div class="brand">Memoir Deja Vu</div>
-  <div class="brand-sub">Your Class Experience</div>
-</header>
+<!-- =====================================================
+     SCREEN 1 — WELCOME: ends at "your class rep has
+     started something special…"
+     ===================================================== -->
+<div class="screen active" id="screen-welcome">
+  <header class="site-header">
+    <div class="brand">Memoir Deja Vu</div>
+    <div class="brand-sub">Your Class Experience</div>
+  </header>
 
-<!-- HERO -->
-<section class="cm-hero">
-  <div class="dept-banner">
-    <span class="dept-icon">🎓</span>
-    <span class="dept-name" id="deptName">Your Department</span>
-    <span class="dept-sep">·</span>
-    <span class="dept-school" id="deptSchool">Your University</span>
+  <div class="screen-inner">
+    <div class="dept-banner">
+      <span style="font-size:1rem;">🎓</span>
+      <span class="dept-name" id="deptName">Your Department</span>
+      <span class="dept-sep">·</span>
+      <span class="dept-school" id="deptSchool">Your University</span>
+    </div>
+
+    <div class="hero-eyebrow">You've been invited</div>
+    <h1 class="hero-title">
+      Your class is building<br>something <em>extraordinary.</em>
+    </h1>
+    <div class="hero-divider"></div>
+    <p class="hero-sub">
+      Your class rep has started something special — a permanent digital home
+      for every memory, every name, and every feeling from your years together.
+      You're part of it.
+    </p>
+
+    <button class="btn-next" onclick="goTo('screen-inside')">
+      See What's Being Built &nbsp;→
+    </button>
   </div>
-  <div class="hero-eyebrow">You've been invited</div>
-  <h1 class="hero-title">
-    Your class is building<br>something <em>extraordinary.</em>
-  </h1>
-  <div class="hero-divider"></div>
-  <p class="hero-sub">
-    Your class rep has started something special — a permanent digital home
-    for every memory, every name, and every feeling from your years together.
-    You're part of it.
-  </p>
-  <a href="#what-inside" class="hero-scroll-cta">See what's being built &nbsp;↓</a>
-</section>
 
-<!-- FEATURES -->
-<section class="features" id="what-inside">
-  <div class="container">
+  <footer class="site-footer">
+    <div class="footer-brand">Memoir Deja Vu</div>
+    <div class="footer-text">Graduation Experience Design</div>
+  </footer>
+</div>
+
+<!-- =====================================================
+     SCREEN 2 — WHAT'S INSIDE + "Ten years from now"
+     ===================================================== -->
+<div class="screen" id="screen-inside">
+  <header class="site-header">
+    <div class="brand">Memoir Deja Vu</div>
+    <div class="brand-sub">What's Being Built</div>
+  </header>
+
+  <div class="content-wrap">
     <span class="section-label">What's Inside</span>
     <h2 class="section-title">Everything your class<br>story needs.</h2>
     <div class="section-divider"></div>
@@ -248,6 +416,7 @@
       This isn't a template. It's a hand-built, fully personalized digital home for your graduating class —
       alive with every name, every memory, every feeling from your years together.
     </p>
+
     <div class="features-grid">
       <div class="feature-card">
         <span class="feature-icon">👑</span>
@@ -285,99 +454,144 @@
         <div class="feature-desc">A fully searchable, alphabetically filterable archive of every graduate. Click any name and their full profile slides open. On mobile it rises from the bottom. On desktop it glides in from the side. Every single person, remembered properly.</div>
       </div>
     </div>
-  </div>
-</section>
 
-<!-- QUOTE -->
-<section class="quote-section">
-  <div class="container">
-    <p class="big-quote">
-      Ten years from now, someone will open this site and
-      <span>feel everything all over again.</span>
-      Their quote will still be there. Their memory will still be there.
-      The confession that made them cry will still be there.
-    </p>
-    <div class="quote-attr">— Memoir Deja Vu</div>
-  </div>
-</section>
+    <!-- Ten years from now quote -->
+    <div class="quote-block">
+      <p class="big-quote">
+        Ten years from now, someone will open this site and
+        <span>feel everything all over again.</span>
+        Their quote will still be there. Their memory will still be there.
+        The confession that made them cry will still be there.
+      </p>
+      <div class="quote-attr">— Memoir Deja Vu</div>
+    </div>
 
- 
+    <div class="s2-cta-wrap">
+      <button class="btn-next" onclick="goTo('screen-form')" style="opacity:1; animation:none;">
+        Be Part of It &nbsp;→
+      </button>
     </div>
   </div>
-</section>
 
-<!-- FORM -->
-<section class="form-section" id="submit-memory">
-  <div class="container">
+  <footer class="site-footer">
+    <div class="footer-brand">Memoir Deja Vu</div>
+    <div class="footer-text">Powered by Memoir Deja Vu</div>
+  </footer>
+</div>
+
+<!-- =====================================================
+     SCREEN 3 — FORM
+     Opens with "Somewhere between..." then asks for
+     Name, Year, and one memory prompt.
+     ===================================================== -->
+<div class="screen" id="screen-form">
+  <header class="site-header">
+    <div class="brand">Memoir Deja Vu</div>
+    <div class="brand-sub">Your Memory</div>
+  </header>
+
+  <div class="form-outer">
     <div class="form-wrap">
-      <div id="formState">
-        <div class="form-dept-tag">
-          <span>🎓</span>
-          <span id="formDeptName">Your Department</span>
+
+      <!-- Opening quote -->
+      <p class="form-opening">
+        "Somewhere between who you were in year one<br>and who you are today —<br>there's a story worth preserving. We build it."
+      </p>
+      <div class="form-opening-attr">— Memoir Deja Vu</div>
+
+      <!-- One action prompt -->
+      <div class="form-prompt" id="formPromptTitle">
+        First thing that comes to mind when you think about your time in <span id="formDeptName">your department</span>.
+      </div>
+      <p class="form-prompt-sub">Don't overthink it.</p>
+
+      <div class="fields">
+        <div class="field">
+          <label>Your Name</label>
+          <input type="text" id="cmName" placeholder="e.g. Emeka Okafor" autocomplete="name" />
         </div>
-        <div class="form-title">Share Your Memory.</div>
-        <p class="form-sub">
-          One memory. That's all we need from you right now.
-          It will live inside your class experience forever.
-        </p>
-        <div class="fields">
-          <div class="field">
-            <label>Your Full Name</label>
-            <input type="text" id="cmName" placeholder="e.g. Emeka Okafor" autocomplete="name" />
-          </div>
-          <div class="field">
-            <label>Your Level / Year</label>
-            <select id="cmYear">
-              <option value="" disabled selected>Select your year</option>
-              <option>1st Year</option>
-              <option>2nd Year</option>
-              <option>3rd Year</option>
-              <option>4th Year</option>
-              <option>5th Year</option>
-              <option>Final Year</option>
-            </select>
-          </div>
-          <div class="field">
-            <label>Your Favourite Memory</label>
-            <textarea id="cmMemory" placeholder="That moment in 300 level when..." maxlength="400" oninput="updateCharCount()"></textarea>
-            <div class="char-count"><span id="charCount">0</span>/400</div>
-          </div>
+        <div class="field">
+          <label>Year</label>
+          <select id="cmYear">
+            <option value="" disabled selected>Select your year</option>
+            <option>1st Year</option>
+            <option>2nd Year</option>
+            <option>3rd Year</option>
+            <option>4th Year</option>
+            <option>5th Year</option>
+            <option>Final Year</option>
+          </select>
         </div>
-        <button class="btn-primary" onclick="submitMemory()">Save My Memory Forever →</button>
+        <div class="field">
+          <label>First thing that comes to mind when you think about your time in Your Department</label>
+          <textarea id="cmMemory" placeholder="Don't overthink it…" maxlength="400" oninput="updateCharCount()"></textarea>
+          <div class="char-count"><span id="charCount">0</span>/400</div>
+        </div>
       </div>
 
-      <div class="success-state" id="successState">
-        <span class="success-icon">🕊️</span>
-        <div class="success-title">Your Memory Has Been Saved.</div>
-        <p class="success-message">
-          It will live inside your class experience forever.
-          Watch this space — something beautiful is coming.
-        </p>
-      </div>
+      <!-- "This is just the beginning" note -->
+      <p class="form-footer-note">This is just the beginning of what we're building for your class.</p>
+
+      <button class="btn-primary" onclick="submitMemory()">Submit My Memory →</button>
+
     </div>
   </div>
-</section>
 
-<footer class="site-footer">
-  <div class="footer-brand">Memoir Deja Vu</div>
-  <div class="footer-text">Powered by Memoir Deja Vu</div>
-</footer>
+  <footer class="site-footer">
+    <div class="footer-brand">Memoir Deja Vu</div>
+    <div class="footer-text">Powered by Memoir Deja Vu</div>
+  </footer>
+</div>
+
+<!-- =====================================================
+     SCREEN 4 — SUCCESS
+     ===================================================== -->
+<div class="screen" id="screen-success">
+  <header class="site-header">
+    <div class="brand">Memoir Deja Vu</div>
+    <div class="brand-sub">You're Part of It</div>
+  </header>
+
+  <div class="success-inner">
+    <div class="success-seal">🏛️</div>
+    <h2 class="success-title">
+      Something is being built for your class that no graduation ceremony can give them.
+    </h2>
+    <p class="success-sub">
+      The ceremony ends. This doesn't.
+    </p>
+  </div>
+
+  <footer class="site-footer">
+    <div class="footer-brand">Memoir Deja Vu</div>
+    <div class="footer-text">Powered by Memoir Deja Vu</div>
+  </footer>
+</div>
 
 <script>
 const SB_URL  = 'https://hwswintesajjitlmepnt.supabase.co';
 const SB_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh3c3dpbnRlc2Fqaml0bG1lcG50Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE4NDkwMzQsImV4cCI6MjA4NzQyNTAzNH0.jl8cNK6GCqboXwhPHLmlLO0_Fj-kBbEnKLtwgd7R-K0';
 
+/* Read URL params */
 const params = new URLSearchParams(window.location.search);
 const dept   = params.get('dept')  || 'Your Department';
 const uni    = params.get('uni')   || 'Your University';
 const grad   = params.get('grad')  || '';
 const token  = params.get('token') || '';
 
+/* Inject dept/uni into all the right spots */
 document.getElementById('deptName').textContent    = dept;
 document.getElementById('deptSchool').textContent  = `${uni}${grad ? ' · ' + grad : ''}`;
 document.getElementById('formDeptName').textContent = dept;
 
-/* Scroll reveal */
+/* ===== NAVIGATION ===== */
+function goTo(screenId) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(screenId).classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+/* Scroll reveal for feature cards */
 const obs = new IntersectionObserver((entries) => {
   entries.forEach((e, i) => {
     if (e.isIntersecting) {
@@ -386,12 +600,14 @@ const obs = new IntersectionObserver((entries) => {
     }
   });
 }, { threshold: 0.12 });
-document.querySelectorAll('.feature-card, .phase-item').forEach(el => obs.observe(el));
+document.querySelectorAll('.feature-card').forEach(el => obs.observe(el));
 
+/* Char count */
 function updateCharCount() {
   document.getElementById('charCount').textContent = document.getElementById('cmMemory').value.length;
 }
 
+/* Submit */
 async function submitMemory() {
   const name   = document.getElementById('cmName').value.trim();
   const year   = document.getElementById('cmYear').value;
@@ -408,21 +624,23 @@ async function submitMemory() {
 
   const btn = document.querySelector('.btn-primary');
   btn.disabled = true;
-  btn.textContent = 'Saving your memory...';
+  btn.textContent = 'Saving…';
 
   try {
     await fetch(`${SB_URL}/rest/v1/classmate_memories`, {
       method: 'POST',
-      headers: { 'apikey': SB_ANON, 'Authorization': `Bearer ${SB_ANON}`, 'Content-Type': 'application/json', 'Prefer': 'return=representation' },
+      headers: {
+        'apikey': SB_ANON, 'Authorization': `Bearer ${SB_ANON}`,
+        'Content-Type': 'application/json', 'Prefer': 'return=representation'
+      },
       body: JSON.stringify({ name, year, memory, dept_token: token, dept_name: dept, uni_name: uni, grad_year: grad })
     });
   } catch(e) { console.error('Error:', e); }
 
-  document.getElementById('formState').style.display    = 'none';
-  document.getElementById('successState').style.display = 'block';
-  window.scrollTo({ top: document.getElementById('submit-memory').offsetTop - 80, behavior: 'smooth' });
+  goTo('screen-success');
 }
 
+/* Clear errors on input */
 document.querySelectorAll('input, textarea, select').forEach(el => {
   el.addEventListener('input',  () => el.classList.remove('error'));
   el.addEventListener('change', () => el.classList.remove('error'));
